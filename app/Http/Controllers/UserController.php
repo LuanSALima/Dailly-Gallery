@@ -73,6 +73,7 @@ class UserController extends Controller
             'password' => $request->password
         ];
 
+        //Com os dados recebidos do login, tenta autenticar
         if(Auth::attempt($credentials))
         {
             return redirect()->route('home');
@@ -89,6 +90,18 @@ class UserController extends Controller
         Auth::logout();
 
         return redirect()->route('home');
+    }
+
+    public function profile($id)
+    {
+        //Busca o usuário através do id recebido pela URL
+        $user = User::where('id', $id)->first();
+
+        //Retorna a View enviando a variavel $user junto
+        return view('user.profile', [
+            'user' => $user
+        ]);
+
     }
 
 }

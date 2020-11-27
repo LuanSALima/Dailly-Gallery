@@ -30,3 +30,7 @@ Route::post('register/do', [App\Http\Controllers\UserController::class, 'registe
 Route::post('login/do', [App\Http\Controllers\UserController::class, 'login'])->name('user.login.do');
 
 Route::post('logout', [App\Http\Controllers\UserController::class, 'logout'])->name('user.logout');
+
+Route::resource('arte', 'App\Http\Controllers\ArtController')->names('art')->parameters(['arte' => 'art']);
+
+Route::get('perfil/{user}', [App\Http\Controllers\UserController::class, 'profile'])->name('user.profile');

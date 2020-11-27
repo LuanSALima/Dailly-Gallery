@@ -15,7 +15,14 @@ class CreateArteTable extends Migration
     {
         Schema::create('arte', function (Blueprint $table) {
             $table->id();
+
+            $table->unsignedBigInteger('author');
+            $table->string('title');
+            $table->string('path');
+
             $table->timestamps();
+
+            $table->foreign('author')->references('id')->on('users');
         });
     }
 

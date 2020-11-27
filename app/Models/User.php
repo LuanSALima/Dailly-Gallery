@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+//Adicionado
+//use Illuminate\Database\Eloquent\Model;
+
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
@@ -40,4 +43,11 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    //Função para retornar as artes deste author
+    public function arts()
+    {
+        //Usuário possui varias Artes
+        return $this->hasMany(Art::class, 'author', 'id');
+    }
 }

@@ -21,10 +21,7 @@
                 <div class="collapse navbar-collapse justify-content-between">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Link</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Link</a>
+                            <a class="nav-link {{ (Route::current()->getName() === 'art.create') ? 'active' : '' }}" href="{{ route('art.create') }}">Cadastrar Arte</a>
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
@@ -37,7 +34,7 @@
                         </li>
                         @else {{-- Caso esteja logado --}}
                         <li class="nav-item">
-                            <span class="nav-link">{{ Auth::user()->name }}</span>
+                            <a class="nav-link" href="{{ route('user.profile', ['user' => Auth::user()->id]) }}">{{ Auth::user()->name }}</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('user.logout') }}"
