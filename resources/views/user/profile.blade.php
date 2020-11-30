@@ -15,8 +15,9 @@
             </div>
 
             @if(!$user->arts->isEmpty()) {{-- Verifica o usuário possui artes cadastradas --}}
+            <div class="row">
                 @foreach($user->arts as $art)
-                    <div class="card text-center">
+                    <div class="card m-2 text-center">
                         <div class="card-body">
                             <img src="http://localhost/Dailly-Gallery/public/storage/{{ $art->path }}">
                         </div>
@@ -25,6 +26,7 @@
                         </div>
                     </div>
                 @endforeach
+            </div>
             @else
                 <h3 class="text-danger text-center">Não possui artes cadastradas</h3>
             @endif

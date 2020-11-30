@@ -55,6 +55,47 @@ class UserController extends Controller
         }
     }
 
+    public function asyncRegister(Request $request)
+    {
+        //Se nenhum campo está vazio
+        if(!empty($request->name) && !empty($request->email) && !empty($request->password) && !empty($request->confirmPassword))
+        {
+            //Se o email não for válido
+            if(!filter_var($request->email, FILTER_VALIDATE_EMAIL)){
+                $userRegister['success'] = false;
+                $userRegister['message'] = "O email informado não é valido";
+                echo json_encode($userRegister);
+                return;
+            }
+
+            //Se o campo senha estiver diferente do confirmar senha
+            if($request->password != $request->confirmPassword)
+            {
+                $userRegister['success'] = false;
+                $userRegister['message'] = "As senhas não coincidem";
+                echo json_encode($userRegister);
+                return;
+            }
+
+            $user = new User(); //Instancia a Model User
+            $user->name = $request->name;  //Adiciona Nome ao objeto            
+            $user->email = $request->email; //Adiciona Email ao objeto
+            $user->password = Hash::make($request->password); //Adiciona senha criptografada ao objeto
+            $user->save(); //Grava no banco de dados
+
+            $userRegister['success'] = true;
+            echo json_encode($userRegister);
+            return;
+        }
+        else
+        {
+            $userRegister['success'] = false;
+            $userRegister['message'] = "É necessário preencher todos os campos";
+            echo json_encode($userRegister);
+            return;
+        }
+    }
+
     public function showLoginForm()
     {
         return view('user.login');
@@ -82,6 +123,38 @@ class UserController extends Controller
         {
             //Caso não consiga autenticar, volta um caminho e envia uma mensagem de erro e devolve o input email
             return redirect()->back()->withInput()->withErrors(['Os dados informados não conferem']);
+        }
+    }
+
+    public function asyncLogin(Request $request)
+    {
+        //Se não for um email valido
+        if(!filter_var($request->email, FILTER_VALIDATE_EMAIL)){
+            $userLogin['success'] = false;
+            $userLogin['message'] = "O email informado não é válido";
+            echo json_encode($userLogin);
+            return;
+        }
+
+        //Vetor associativo com os campos recebidos por request
+        $credentials = [
+            'email' => $request->email,
+            'password' => $request->password
+        ];
+
+        //Com os dados recebidos do login, tenta autenticar
+        if(Auth::attempt($credentials))
+        {
+            $userLogin['success'] = true;
+            echo json_encode($userLogin);
+            return;
+        }
+        else
+        {
+            $userLogin['success'] = false;
+            $userLogin['message'] = "Os dados informados não conferem";
+            echo json_encode($userLogin);
+            return;
         }
     }
 

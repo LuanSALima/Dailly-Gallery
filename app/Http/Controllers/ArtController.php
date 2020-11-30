@@ -66,6 +66,34 @@ class ArtController extends Controller
         }
     }
 
+    public function asyncStore(Request $request)
+    {
+        //Verifica se os campos foram preenchidos
+        if(!empty($request->title) && !empty($request->art))
+        {
+            $art = new Art(); //Cria um objeto da model Art
+
+            $idAuthor = Auth::user()->id; //Guarda o valor do ID do usuário autenticado
+
+            $art->author = $idAuthor; //Campo author recebe o id do usuário autenticado
+            $art->title = $request->title; //Campo titulo recebe o título escrito no formulário
+            $art->path = $request->file('art')->store('art/'.$idAuthor); //Campo caminho recebe o caminho retornado do método de gravar arquivo no storage
+
+            $art->save(); //Cadastra no banco de dados o author, título e caminho
+
+            $artStore['success'] = true; //Chave success recebe true
+            echo json_encode($artStore); //Retorna um JSON com sucesso true
+            return;
+        }
+        else
+        {
+            $artStore['success'] = false; //Chave sucesso recebe falso
+            $artStore['message'] = "É necessário preencher todos os campos"; //Mensagem de erro
+            echo json_encode($artStore); //Retorna um JSON com uma mensagem de erro e success falso
+            return;
+        }
+    }
+
     /**
      * Display the specified resource.
      *

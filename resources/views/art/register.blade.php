@@ -20,7 +20,11 @@
         </div>
         @endif
 
-        <form action="{{ route('art.store') }}" method="POST" enctype="multipart/form-data">
+        <div id="mensagem">
+            
+        </div>
+
+        <form id="formArt" action="{{ route('art.store') }}" method="POST" enctype="multipart/form-data">
 
             @csrf
 
@@ -36,4 +40,46 @@
         </form>
     </div>
 </div>
+@endsection
+
+{{-- Definindo os scripts da página --}}
+@section('content-script')
+<script>
+            
+    $(function(){
+        $('form#formArt').submit(function(event){
+
+            event.preventDefault(); //Prevenindo o comportamento padrão (evento de submit)
+
+            var camposForm = new FormData($(this)[0]); //Utilizando a classe FormData para armazenar todo os dados do formulário (Para conseguir enviar a imagem por AJAX)
+
+            //Enviando um ajax
+            $.ajax({
+                url: "{{ route('art.async.store') }}", //Rota que retornará JSON
+                type: "POST",
+                contentType : false,
+                processData : false,
+                data: camposForm, //Dados enviados
+                dataType: 'json',
+
+                success: function(response){
+                    if(response.success === true){
+                        //Redirecionar
+
+                        window.location.href = "{{ route('home') }}";
+                    }else{
+                        //Apresentar erro
+
+                        $('#mensagem').addClass("alert alert-danger").html(response.message);
+                    }
+                },
+                error: function(response)
+                {
+                    $('#mensagem').addClass("alert alert-danger").html("Ocorreu um erro ao enviar os dados. Tente mais tarde");
+                }
+            });
+        });
+    });
+
+</script>
 @endsection

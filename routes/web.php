@@ -25,12 +25,19 @@ Route::get('login', [App\Http\Controllers\UserController::class, 'showLoginForm'
 
 Route::get('registrar', [App\Http\Controllers\UserController::class, 'showRegisterForm'])->name('user.register');
 
+
+Route::get('perfil/{user}', [App\Http\Controllers\UserController::class, 'profile'])->name('user.profile');
+
+Route::resource('arte', 'App\Http\Controllers\ArtController')->names('art')->parameters(['arte' => 'art']);
+
 Route::post('register/do', [App\Http\Controllers\UserController::class, 'register'])->name('user.register.do');
 
 Route::post('login/do', [App\Http\Controllers\UserController::class, 'login'])->name('user.login.do');
 
 Route::post('logout', [App\Http\Controllers\UserController::class, 'logout'])->name('user.logout');
 
-Route::resource('arte', 'App\Http\Controllers\ArtController')->names('art')->parameters(['arte' => 'art']);
+Route::post('arte/async/store', [App\Http\Controllers\ArtController::class, 'asyncStore'])->name('art.async.store');
 
-Route::get('perfil/{user}', [App\Http\Controllers\UserController::class, 'profile'])->name('user.profile');
+Route::post('user/async/register', [App\Http\Controllers\UserController::class, 'asyncRegister'])->name('user.async.register');
+
+Route::post('user/async/login', [App\Http\Controllers\UserController::class, 'asyncLogin'])->name('user.async.login');

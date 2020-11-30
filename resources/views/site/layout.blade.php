@@ -57,5 +57,8 @@
 
         <script type="text/javascript" src="{{ url(mix('site/jquery.js')) }}"></script>
         <script type="text/javascript" src="{{ url(mix('site/bootstrap.js')) }}"></script>
+
+        {{-- Resgatando os scripts do conteudo, para ficar abaixo do jquery --}}
+        @yield('content-script')
     </body>
 </html>

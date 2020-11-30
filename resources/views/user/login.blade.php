@@ -20,7 +20,11 @@
 		</div>
 		@endif
 
-		<form action="{{ route('user.login.do') }}" method="POST">
+		<div id="mensagem">
+            
+        </div>
+
+		<form id="formLogin" action="{{ route('user.login.do') }}" method="POST">
 
 			@csrf
 
@@ -40,4 +44,43 @@
 		</form>
 	</div>
 </div>
+@endsection
+
+
+{{-- Definindo os scripts da página --}}
+@section('content-script')
+<script>
+            
+    $(function(){
+        $('form#formLogin').submit(function(event){
+
+            event.preventDefault(); //Prevenindo o comportamento padrão (evento de submit)
+
+            //Enviando um ajax
+            $.ajax({
+                url: "{{ route('user.async.login') }}", //Rota que retornará JSON
+                type: "POST",
+                data: $(this).serialize(),
+                dataType: 'json',
+
+                success: function(response){
+                    if(response.success === true){
+                        //Redirecionar
+
+                        window.location.href = "{{ route('home') }}";
+                    }else{
+                        //Apresentar erro
+
+                        $('#mensagem').addClass("alert alert-danger").html(response.message);
+                    }
+                },
+                error: function(response)
+                {
+                    $('#mensagem').addClass("alert alert-danger").html("Ocorreu um erro ao enviar os dados. Tente mais tarde");
+                }
+            });
+        });
+    });
+
+</script>
 @endsection
