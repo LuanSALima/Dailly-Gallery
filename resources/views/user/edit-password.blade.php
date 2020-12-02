@@ -2,14 +2,14 @@
 
 
 {{-- Definindo o título da página --}}
-@section('title', 'Registrar-se')
+@section('title', 'Alterar Senha')
 
 {{-- Definindo o conteudo da página --}}
 @section('content')
 <div class="h-100 py-5 row align-items-center justify-content-center">
     <div class="container w-50">
         <div class="text-center py-4">
-            <h2>Registrar-se</h2>
+            <h2>Alterar Senha</h2>
         </div>
         
         @if($errors->all()) {{-- Verifica se possui erros --}}
@@ -24,27 +24,24 @@
             
         </div>
 
-        <form id="formCad" action="{{ route('user.register.do') }}" method="POST">
+        <form id="formEditPassword" action="{{ route('account.password.edit') }}" method="POST">
 
+            @method('PATCH')
             @csrf
 
             <div class="form-group">
-                <input class="form-control" type="text" name="name" placeholder="Nome">
+                <input class="form-control" type="password" name="currentPassword" placeholder="Senha Atual">
             </div>
 
             <div class="form-group">
-                <input class="form-control" type="text" name="email" placeholder="E-mail">
-            </div>
-
-            <div class="form-group">
-                <input class="form-control" type="password" name="password" placeholder="Senha">
+                <input class="form-control" type="password" name="newPassword" placeholder="Nova Senha">
             </div>
             
             <div class="form-group">
-                <input class="form-control" type="password" name="confirmPassword" placeholder="Confirmar Senha">
+                <input class="form-control" type="password" name="confirmNewPassword" placeholder="Confirmar Nova Senha">
             </div>
 
-            <button class="btn btn-secondary btn-block my-2 bg-cyan">Registrar</button>
+            <button class="btn btn-secondary btn-block my-2 bg-cyan">Alterar</button>
         </form>
     </div>
 </div>
@@ -54,16 +51,16 @@
 {{-- Definindo os scripts da página --}}
 @section('content-script')
 <script>
-            
+   
     $(function(){
-        $('form#formCad').submit(function(event){
+        $('form#formEditPassword').submit(function(event){
 
             event.preventDefault(); //Prevenindo o comportamento padrão (evento de submit)
 
             //Enviando um ajax
             $.ajax({
-                url: "{{ route('user.async.register') }}", //Rota que retornará JSON
-                type: "POST",
+                url: "{{ route('account.async.password') }}", //Rota que retornará JSON
+                type: "PATCH",
                 data: $(this).serialize(),
                 dataType: 'json',
 
@@ -71,7 +68,7 @@
                     if(response.success === true){
                         //Redirecionar
 
-                        window.location.href = "{{ route('user.login') }}";
+                        window.location.href = "{{ route('home') }}";
                     }else{
                         //Apresentar erro
 

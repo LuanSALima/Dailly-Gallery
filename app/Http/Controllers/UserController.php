@@ -8,14 +8,10 @@ use Illuminate\Http\Request;
 use App\Models\User; //Model Usuario
 use Illuminate\Support\Facades\Hash; //Métodos para gerar código hash
 use Illuminate\Support\Facades\Auth; //Métodos de autenticação
+use Illuminate\Http\Response; //Métodos para resposta em json
 
 class UserController extends Controller
 {
-    /*
-
-        Comando utilizado para criar este controller: php artisan make:controller UserController
-
-    */
 
     public function showRegisterForm()
     {
@@ -51,7 +47,7 @@ class UserController extends Controller
         }
         else
         {
-            return redirect()->back()->withInput()->withErrors(['É necessário preencher todos os campos']);
+            return redirect()->back()->withErrors(['É necessário preencher todos os campos']);
         }
     }
 
@@ -62,19 +58,13 @@ class UserController extends Controller
         {
             //Se o email não for válido
             if(!filter_var($request->email, FILTER_VALIDATE_EMAIL)){
-                $userRegister['success'] = false;
-                $userRegister['message'] = "O email informado não é valido";
-                echo json_encode($userRegister);
-                return;
+                return response()->json(['success' => false,'message' => 'O email informado não é valido']);
             }
 
             //Se o campo senha estiver diferente do confirmar senha
             if($request->password != $request->confirmPassword)
             {
-                $userRegister['success'] = false;
-                $userRegister['message'] = "As senhas não coincidem";
-                echo json_encode($userRegister);
-                return;
+                return response()->json(['success' => false,'message' => 'As senhas não coincidem']);
             }
 
             $user = new User(); //Instancia a Model User
@@ -83,16 +73,11 @@ class UserController extends Controller
             $user->password = Hash::make($request->password); //Adiciona senha criptografada ao objeto
             $user->save(); //Grava no banco de dados
 
-            $userRegister['success'] = true;
-            echo json_encode($userRegister);
-            return;
+            return response()->json(['success' => true]);
         }
         else
         {
-            $userRegister['success'] = false;
-            $userRegister['message'] = "É necessário preencher todos os campos";
-            echo json_encode($userRegister);
-            return;
+            return response()->json(['success' => false,'message' => 'É necessário preencher todos os campos']);
         }
     }
 
@@ -105,7 +90,7 @@ class UserController extends Controller
     {
         //Se não for um email valido
         if(!filter_var($request->email, FILTER_VALIDATE_EMAIL)){
-            return redirect()->back()->withInput()->withErrors(['O email informado não é válido']);
+            return redirect()->back()->withErrors(['O email informado não é válido']);
         }
 
         //Vetor associativo com os campos recebidos por request
@@ -122,7 +107,7 @@ class UserController extends Controller
         else
         {
             //Caso não consiga autenticar, volta um caminho e envia uma mensagem de erro e devolve o input email
-            return redirect()->back()->withInput()->withErrors(['Os dados informados não conferem']);
+            return redirect()->back()->withErrors(['Os dados informados não conferem']);
         }
     }
 
@@ -130,10 +115,7 @@ class UserController extends Controller
     {
         //Se não for um email valido
         if(!filter_var($request->email, FILTER_VALIDATE_EMAIL)){
-            $userLogin['success'] = false;
-            $userLogin['message'] = "O email informado não é válido";
-            echo json_encode($userLogin);
-            return;
+            return response()->json(['success' => false,'message' => 'O email informado não é válido']);
         }
 
         //Vetor associativo com os campos recebidos por request
@@ -145,16 +127,11 @@ class UserController extends Controller
         //Com os dados recebidos do login, tenta autenticar
         if(Auth::attempt($credentials))
         {
-            $userLogin['success'] = true;
-            echo json_encode($userLogin);
-            return;
+            return response()->json(['success' => true]);
         }
         else
         {
-            $userLogin['success'] = false;
-            $userLogin['message'] = "Os dados informados não conferem";
-            echo json_encode($userLogin);
-            return;
+            return response()->json(['success' => false,'message' => 'Os dados informados não conferem']);
         }
     }
 
@@ -177,4 +154,160 @@ class UserController extends Controller
 
     }
 
+    public function showEditAccountForm()
+    {
+        if(Auth::check())
+        {
+            //Busca o usuário através do id do usuário autenticado
+            $user = User::where('id', Auth::user()->id)->first();
+
+            //Retorna a View enviando a variavel $user junto
+            return view('user.edit-account', [
+                'user' => $user
+            ]);
+        }
+        else
+        {
+            return redirect()->route('user.login')->withErrors(['É necessário estar logado para editar seu perfil']);
+        }
+    }
+
+    public function editAccount(Request $request)
+    {
+        //Se nenhum campo está vazio
+        if(!empty($request->name) && !empty($request->email))
+        {
+            //Se não for um email valido
+            if(!filter_var($request->email, FILTER_VALIDATE_EMAIL)){
+                return redirect()->back()->withErrors(['O email informado não é válido']);
+            }
+
+            //Procura o usuário logado pelo id
+            $user = User::where('id', Auth::user()->id)->first();
+
+            //Altera os dados dele pelos campos do formulário
+            $user->name = $request->name;
+            $user->email = $request->email;
+
+            //Salvar no banco de dados
+            $user->save();
+
+            return redirect()->route('home');
+        }
+        else
+        {
+            return redirect()->back()->withErrors(['É necessário preencher todos os campos']);
+        }
+    }
+
+    public function asyncEditAccount(Request $request)
+    {
+        //Se nenhum campo está vazio
+        if(!empty($request->name) && !empty($request->email))
+        {
+            //Se não for um email valido
+            if(!filter_var($request->email, FILTER_VALIDATE_EMAIL)){
+                return response()->json(['success' => false, 'message' => 'O email informado não é válido']);
+            }
+
+            //Procura o usuário logado pelo id
+            $user = User::where('id', Auth::user()->id)->first();
+
+            //Altera os dados dele pelos campos do formulário
+            $user->name = $request->name;
+            $user->email = $request->email;
+
+            //Salvar no banco de dados
+            $user->save();
+
+            return response()->json(['success' => 'true']);
+        }
+        else
+        {
+            return response()->json(['success' => false,'message' => 'É necessário preencher todos os campos']);
+        }
+    }
+
+    public function showEditPasswordForm()
+    {
+        if(Auth::check())
+        {
+            return view('user.edit-password');
+        }
+        else
+        {
+            return redirect()->route('user.login')->withErrors(['É necessário estar logado para alterar sua senha']);
+        }
+    }
+
+    public function editPassword(Request $request)
+    {
+        //Se nenhum campo está vazio
+        if(!empty($request->currentPassword) && !empty($request->newPassword) && !empty($request->confirmNewPassword))
+        {
+            //Checa se a senha escrita no formulário é igual a senha do usuário logado
+            if(Hash::check($request->currentPassword, Auth::user()->password))
+            {
+                //Se a nova senha e o confirmar nova senha são iguais
+                if($request->newPassword == $request->confirmNewPassword)
+                {
+                    $user = User::where('password', Auth::user()->password)->first();
+
+                    $user->password = Hash::make($request->newPassword);
+
+                    $user->save();
+
+                    return redirect()->route('home');
+                }
+                else
+                {
+                    return redirect()->back()->withErrors(['As novas senhas não coincidem']);
+                }
+            }
+            else
+            {
+                return redirect()->back()->withErrors(['Senha Atual incorreta']);
+            }
+        }
+        else
+        {
+            return redirect()->back()->withErrors(['É necessário preencher todos os campos']);
+        }
+    }
+
+    public function asyncEditPassword(Request $request)
+    {
+        //Se nenhum campo está vazio
+        if(!empty($request->currentPassword) && !empty($request->newPassword) && !empty($request->confirmNewPassword))
+        {
+            //Checa se a senha escrita no formulário é igual a senha do usuário logado
+            if(Hash::check($request->currentPassword, Auth::user()->password))
+            {
+                //Se a nova senha e o confirmar nova senha são iguais
+                if($request->newPassword == $request->confirmNewPassword)
+                {
+                    //Usuário logado
+                    $user = User::where('password', Auth::user()->password)->first();
+
+                    $user->password = Hash::make($request->newPassword);
+
+                    $user->save();
+
+                    return response()->json(['success' => true]); 
+                }
+                else
+                {
+                    return response()->json(['success' => false,'message' => 'As novas senhas não coincidem']);
+                }
+            }
+            else
+            {
+                return response()->json(['success' => false,'message' => 'Senha Atual incorreta']);
+            }
+        }
+        else
+        {
+            return response()->json(['success' => false,'message' => 'É necessário preencher todos os campos']);
+        }
+    }
 }

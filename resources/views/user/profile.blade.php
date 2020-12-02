@@ -7,7 +7,7 @@
 {{-- Definindo o conteudo da página --}}
 @section('content')
 <div class="h-100 py-5 row align-items-center justify-content-center">
-    <div class="container w-50">
+    <div class="container">
         
         @if(!empty($user)) {{-- Verifica se existe um usuário retornado do controller --}}
             <div class="text-center py-4">
@@ -22,7 +22,7 @@
                             <img src="http://localhost/Dailly-Gallery/public/storage/{{ $art->path }}">
                         </div>
                         <div class="card-footer">
-                            <p>{{ $art->title }}</p>
+                            <p class="font-weight-bold">{{ $art->title }}</p>
                         </div>
                     </div>
                 @endforeach

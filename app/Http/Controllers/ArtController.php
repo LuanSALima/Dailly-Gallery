@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 //Dependências adicionadas
 use App\Models\User; //Model Usuario
 use Illuminate\Support\Facades\Auth; //Métodos de autenticação
+use Illuminate\Http\Response; //Métodos para resposta em json
 
 class ArtController extends Controller
 {
@@ -18,7 +19,11 @@ class ArtController extends Controller
      */
     public function index()
     {
-        //
+        $arts = Art::all();
+
+        return view('art.list', [
+            'arts' => $arts
+        ]);
     }
 
     /**
@@ -80,17 +85,14 @@ class ArtController extends Controller
             $art->path = $request->file('art')->store('art/'.$idAuthor); //Campo caminho recebe o caminho retornado do método de gravar arquivo no storage
 
             $art->save(); //Cadastra no banco de dados o author, título e caminho
-
-            $artStore['success'] = true; //Chave success recebe true
-            echo json_encode($artStore); //Retorna um JSON com sucesso true
-            return;
+            
+            //Retorna um JSON com sucesso true
+            return response()->json(['success' => true]);
         }
         else
         {
-            $artStore['success'] = false; //Chave sucesso recebe falso
-            $artStore['message'] = "É necessário preencher todos os campos"; //Mensagem de erro
-            echo json_encode($artStore); //Retorna um JSON com uma mensagem de erro e success falso
-            return;
+            //Retorna um JSON com uma mensagem de erro e success falso
+            return response()->json(['success' => false,'message' => 'É necessário preencher todos os campos']);
         }
     }
 

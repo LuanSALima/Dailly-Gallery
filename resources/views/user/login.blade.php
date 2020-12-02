@@ -12,13 +12,13 @@
 			<h2>Login</h2>
 		</div>
 		
-		@if($errors->all()) <!--Verifica se possui erros-->
-		<div class="alert alert-danger">
-				@foreach($errors->all() as $error) <!--Para cada erro encontrado-->
-					<span>{{ $error }}</span>
-				@endforeach
-		</div>
-		@endif
+		@if($errors->all()) {{-- Verifica se possui erros --}}
+        <div class="alert alert-danger">
+                @foreach($errors->all() as $error) {{-- Para cada erro encontrado --}}
+                    <span>{{ $error }}</span>
+                @endforeach
+        </div>
+        @endif
 
 		<div id="mensagem">
             

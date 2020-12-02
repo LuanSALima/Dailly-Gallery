@@ -25,10 +25,11 @@ Route::get('login', [App\Http\Controllers\UserController::class, 'showLoginForm'
 
 Route::get('registrar', [App\Http\Controllers\UserController::class, 'showRegisterForm'])->name('user.register');
 
+Route::get('conta/editar', [App\Http\Controllers\UserController::class, 'showEditAccountForm'])->name('account.edit');
+
+Route::get('conta/senha', [App\Http\Controllers\UserController::class, 'showEditPasswordForm'])->name('account.password');
 
 Route::get('perfil/{user}', [App\Http\Controllers\UserController::class, 'profile'])->name('user.profile');
-
-Route::resource('arte', 'App\Http\Controllers\ArtController')->names('art')->parameters(['arte' => 'art']);
 
 Route::post('register/do', [App\Http\Controllers\UserController::class, 'register'])->name('user.register.do');
 
@@ -41,3 +42,13 @@ Route::post('arte/async/store', [App\Http\Controllers\ArtController::class, 'asy
 Route::post('user/async/register', [App\Http\Controllers\UserController::class, 'asyncRegister'])->name('user.async.register');
 
 Route::post('user/async/login', [App\Http\Controllers\UserController::class, 'asyncLogin'])->name('user.async.login');
+
+Route::patch('account/edit/do', [App\Http\Controllers\UserController::class, 'editAccount'])->name('account.edit.do');
+
+Route::patch('account/async/edit', [App\Http\Controllers\UserController::class, 'asyncEditAccount'])->name('account.async.edit');
+
+Route::patch('account/password/edit', [App\Http\Controllers\UserController::class, 'editPassword'])->name('account.password.edit');
+
+Route::patch('account/async/password/edit', [App\Http\Controllers\UserController::class, 'asyncEditPassword'])->name('account.async.password');
+
+Route::resource('arte', 'App\Http\Controllers\ArtController')->names('art')->parameters(['arte' => 'art']);

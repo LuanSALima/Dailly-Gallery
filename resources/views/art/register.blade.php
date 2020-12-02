@@ -12,9 +12,9 @@
             <h2>Cadastrar Arte</h2>
         </div>
         
-        @if($errors->all()) <!--Verifica se possui erros-->
+        @if($errors->all()) {{-- Verifica se possui erros --}}
         <div class="alert alert-danger">
-                @foreach($errors->all() as $error) <!--Para cada erro encontrado-->
+                @foreach($errors->all() as $error) {{-- Para cada erro encontrado --}}
                     <span>{{ $error }}</span>
                 @endforeach
         </div>
