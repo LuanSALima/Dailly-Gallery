@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateArteTable extends Migration
+class CreateArtTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateArteTable extends Migration
      */
     public function up()
     {
-        Schema::create('arte', function (Blueprint $table) {
+        Schema::create('art', function (Blueprint $table) {
             $table->id();
 
             $table->unsignedBigInteger('author');

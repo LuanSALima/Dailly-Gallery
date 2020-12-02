@@ -9,12 +9,19 @@ class Art extends Model
 {
     use HasFactory;
 
-    protected $table = 'arte';
+    protected $table = 'art';
 
     //Função para retornar o autor da arte
     public function author()
     {
     	//Arte pertence a apenas um Usuário
     	return $this->belongsTo(User::class, 'author', 'id');
+    }
+
+    //Função para retornar os likes desta arte
+    public function likes()
+    {
+    	//Arte possui varios likes
+        return $this->hasMany(ArtLike::class, 'art', 'id');
     }
 }

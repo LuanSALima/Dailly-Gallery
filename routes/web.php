@@ -52,3 +52,5 @@ Route::patch('account/password/edit', [App\Http\Controllers\UserController::clas
 Route::patch('account/async/password/edit', [App\Http\Controllers\UserController::class, 'asyncEditPassword'])->name('account.async.password');
 
 Route::resource('arte', 'App\Http\Controllers\ArtController')->names('art')->parameters(['arte' => 'art']);
+
+Route::post('arte/like/{art_id}', [App\Http\Controllers\ArtLikeController::class, 'rate'])->name('art.like');

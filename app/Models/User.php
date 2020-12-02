@@ -50,4 +50,11 @@ class User extends Authenticatable
         //Usuário possui varias Artes
         return $this->hasMany(Art::class, 'author', 'id');
     }
+
+    //Função para retornar os likes deste user
+    public function likes()
+    {
+        //Usuário cadastra varios likes
+        return $this->hasMany(ArtLike::class, 'user', 'id');
+    }
 }

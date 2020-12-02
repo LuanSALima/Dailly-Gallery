@@ -28,14 +28,18 @@
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
+                        
                         @guest {{-- Caso não esteja logado --}}
+
                         <li class="nav-item">
                             <a class="nav-link {{ (Route::current()->getName() === 'user.login') ? 'active' : '' }}" href="{{ route('user.login') }}">Login</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ (Route::current()->getName() === 'user.register') ? 'active' : '' }}" href="{{ route('user.register') }}">Registrar-se</a>
                         </li>
+
                         @else {{-- Caso esteja logado --}}
+
                         <li class="nav-item dropdown mx-auto">
                             <a class="nav-link dropdown-toggle" href="#"data-toggle="dropdown" >
                               {{ Auth::user()->name }}
