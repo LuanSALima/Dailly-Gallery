@@ -104,7 +104,9 @@ class ArtController extends Controller
      */
     public function show(Art $art)
     {
-        //
+        return view('art.show', [
+            'art' => $art
+        ]);
     }
 
     /**

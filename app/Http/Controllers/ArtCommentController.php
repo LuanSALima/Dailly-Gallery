@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ArtLike;
+use App\Models\ArtComment;
 use Illuminate\Http\Request;
 
 //Dependências adicionadas
@@ -10,37 +10,25 @@ use App\Models\Art; //Model Usuario
 use Illuminate\Support\Facades\Auth; //Métodos de autenticação
 use Illuminate\Http\Response; //Métodos para resposta em json
 
-class ArtLikeController extends Controller
+class ArtCommentController extends Controller
 {
-    public function rate(Request $request, Art $art_id)
+    public function comment(Request $request, Art $art_id)
     {
         $loggedUser = Auth::user();//Guarda o atual usuário logado
 
         //Se houver um usuário logado
         if(!empty($loggedUser))
         {
-            //Se o usuário logado deu um like na art
-            if($userLike = $loggedUser->likes->where('art', $art_id->id)->first())
+            if(!empty($request->text))
             {
-                $userLike->delete();
+                $artComment = new ArtComment();
 
-                if(isset($request->json))
-                {
-                    return response()->json(['success' => true]);
-                }
-                else
-                {
-                    return redirect()->back(); 
-                }
-            }
-            else
-            {
-                $artLike = new ArtLike();
+                $artComment->art = $art_id->id;
+                $artComment->user = $loggedUser->id;
 
-                $artLike->art = $art_id->id;
-                $artLike->user = $loggedUser->id;
+                $artComment->text = $request->text;
 
-                $artLike->save();
+                $artComment->save();
 
                 if(isset($request->json))
                 {
@@ -49,6 +37,17 @@ class ArtLikeController extends Controller
                 else
                 {
                     return redirect()->back();
+                }
+            }
+            else
+            {
+                if(isset($request->json))
+                {
+                    return response()->json(['success' => false,'message' => 'É necessário preencher o comentário']);
+                }
+                else
+                {
+                    return redirect()->back()->withErrors(['É necessário preencher o comentário']);
                 }
             }
         }
@@ -62,6 +61,21 @@ class ArtLikeController extends Controller
             {
                 return redirect()->back()->withErrors(['É necessário estar logado para avaliar']);
             }
+        }
+    }
+
+    public function destroy(Request $request, ArtComment $art_comment)
+    {
+        //Se o usuário logado deu um like na art
+        $art_comment->delete();
+
+        if(isset($request->json))
+        {
+            return response()->json(['success' => true]);
+        }
+        else
+        {
+            return redirect()->back(); 
         }
     }
 }

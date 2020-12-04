@@ -26,9 +26,11 @@
     <div class="row justify-content-center">
         @foreach($arts as $art)
             <div class="card m-2 text-center">
-                <div class="card-body">
-                    <img src="http://localhost/Dailly-Gallery/public/storage/{{ $art->path }}">
-                </div>
+                <a href="{{ route('art.show', ['art' => $art->id]) }}">
+                    <div class="card-body">
+                        <img src="http://localhost/Dailly-Gallery/public/storage/{{ $art->path }}">
+                    </div>
+                </a>
                 <div class="card-footer">
                     <p class="font-weight-bold">{{ $art->title }}</p>
                     <span>{{ $art->author()->first()->name }}</span>
@@ -38,10 +40,8 @@
                         <span name="num-likes" class="mr-2">
                             {{ $art->likes->count() }}
                         </span>
-                        
-                        
                             
-                        <form action="{{ route('art.like', ['art_id' => $art->id]) }}" method="POST">
+                        <form name="like" action="{{ route('art.like', ['art_id' => $art->id]) }}" method="POST">
 
                             @csrf
 
@@ -57,15 +57,27 @@
                             </button>
                         </form>
 
-                        <form action="" method="POST">
+                        <div class="p-4"></div>
+
+                        <span name="num-favorites" class="p-2">
+                            {{ $art->favorites->count() }}
+                        </span>
+
+                        <form name="favorite" action="{{ route('art.favorite', ['art_id' => $art->id]) }}" method="POST">
                             @csrf
-                            <button class="btn">
+
+                            {{-- Verifica se o usuário logado ja deu um like nesta arte --}}
+                            @if(Auth::check() && !empty( $like = (Auth::user()->favorites->where('art', $art->id)->first())))
+                                <button name="button" class="btn btn-danger">
+                            @else
+                                <button name="button" class="btn btn-success">
+                            @endif
                                 <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-star-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.283.95l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
                                 </svg>
                             </button>
                         </form>
-                        </div>
+                    </div>
                 </div>
             </div>
         @endforeach
@@ -85,9 +97,18 @@
             var camposForm = new FormData($(this)[0]);
             camposForm.append("json", 1);
 
-            //Botão do formulário
-            var formButton = $(this).find('[name=button]');
-            var numLikes = $(this).parent().find('[name=num-likes]');
+            if($(this).attr('name') == 'like')
+            {
+                //Botão do formulário
+                var formButton = $(this).find('[name=button]');
+                var num = $(this).parent().find('[name=num-likes]');
+            }
+            if($(this).attr('name') == 'favorite')
+            {
+                //Botão do formulário
+                var formButton = $(this).find('[name=button]');
+                var num = $(this).parent().find('[name=num-favorites]');
+            }
 
             //Enviando um ajax
             $.ajax({
@@ -105,12 +126,12 @@
                         if(formButton.hasClass('btn-success'))
                         {
                            formButton.removeClass('btn-success').addClass('btn-danger');
-                           numLikes.html( parseInt(numLikes.html())+1 );
+                           num.html( parseInt(num.html())+1 );
                         }
                         else
                         {
                             formButton.removeClass('btn-danger').addClass('btn-success');
-                            numLikes.html( parseInt(numLikes.html())-1 );
+                            num.html( parseInt(num.html())-1 );
                         }
 
                     }else{

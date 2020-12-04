@@ -54,3 +54,9 @@ Route::patch('account/async/password/edit', [App\Http\Controllers\UserController
 Route::resource('arte', 'App\Http\Controllers\ArtController')->names('art')->parameters(['arte' => 'art']);
 
 Route::post('arte/like/{art_id}', [App\Http\Controllers\ArtLikeController::class, 'rate'])->name('art.like');
+
+Route::post('arte/favorite/{art_id}', [App\Http\Controllers\ArtFavoriteController::class, 'favorite'])->name('art.favorite');
+
+Route::post('arte/comment/{art_id}', [App\Http\Controllers\ArtCommentController::class, 'comment'])->name('art.comment.store');
+
+Route::delete('arte/comment/{art_comment}', [App\Http\Controllers\ArtCommentController::class, 'destroy'])->name('art.comment.destroy');

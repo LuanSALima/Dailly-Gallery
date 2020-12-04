@@ -24,4 +24,18 @@ class Art extends Model
     	//Arte possui varios likes
         return $this->hasMany(ArtLike::class, 'art', 'id');
     }
+
+    //Função para retornar os favoritos desta arte
+    public function favorites()
+    {
+        //Arte possui varios favoritos
+        return $this->hasMany(ArtFavorite::class, 'art', 'id');
+    }
+
+    //Função para retornar os comentários desta arte
+    public function comments()
+    {
+        //Arte possui varios comentários
+        return $this->hasMany(ArtComment::class, 'art', 'id');
+    }
 }

@@ -57,4 +57,18 @@ class User extends Authenticatable
         //Usuário cadastra varios likes
         return $this->hasMany(ArtLike::class, 'user', 'id');
     }
+
+    //Função para retornar os favoritos deste user
+    public function favorites()
+    {
+        //Usuário cadastra varios favoritos
+        return $this->hasMany(ArtFavorite::class, 'user', 'id');
+    }
+
+    //Função para retornar os comentários deste user
+    public function comments()
+    {
+        //Usuário cadastra varios comentários
+        return $this->hasMany(ArtComment::class, 'user', 'id');
+    }
 }
