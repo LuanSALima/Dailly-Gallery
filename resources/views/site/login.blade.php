@@ -12,10 +12,11 @@
 			<h2>Login</h2>
 		</div>
 		
-		@if($errors->all()) {{-- Verifica se possui erros --}}
+		@if($errors->any()) {{-- Verifica se possui erros --}}
         <div class="alert alert-danger">
                 @foreach($errors->all() as $error) {{-- Para cada erro encontrado --}}
                     <span>{{ $error }}</span>
+                    <br>
                 @endforeach
         </div>
         @endif
@@ -24,7 +25,7 @@
             
         </div>
 
-		<form id="formLogin" action="{{ route('user.login.do') }}" method="POST">
+		<form id="formLogin" action="{{ route('login.do') }}" method="POST">
 
 			@csrf
 
@@ -33,7 +34,7 @@
 			</div>
 
 			<div class="form-group">
-				<input class="form-control" type="password" name="password" placeholder="Senha">
+				<input class="form-control" type="password" name="senha" placeholder="Senha">
 			</div>
 			
 			<div class="form-group text-center">
@@ -50,18 +51,23 @@
 {{-- Definindo os scripts da página --}}
 @section('content-script')
 <script>
-            
+    
     $(function(){
         $('form#formLogin').submit(function(event){
 
             event.preventDefault(); //Prevenindo o comportamento padrão (evento de submit)
 
+            var camposForm = new FormData($(this)[0]);
+            camposForm.append("json", 1);
+
             //Enviando um ajax
             $.ajax({
-                url: "{{ route('user.async.login') }}", //Rota que retornará JSON
+                url: "{{ route('login.do') }}", //Rota que retornará JSON
                 type: "POST",
-                data: $(this).serialize(),
+                data: camposForm,
                 dataType: 'json',
+                contentType : false,
+                processData : false,
 
                 success: function(response){
                     if(response.success === true){
@@ -81,6 +87,6 @@
             });
         });
     });
-
+   
 </script>
 @endsection

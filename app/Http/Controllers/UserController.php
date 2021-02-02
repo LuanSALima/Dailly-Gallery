@@ -42,7 +42,7 @@ class UserController extends Controller
             $user->password = Hash::make($request->password); //Adiciona senha criptografada ao objeto
             $user->save(); //Grava no banco de dados
 
-            return redirect()->route('user.login'); //Redireciona para a rota index
+            return redirect()->route('login'); //Redireciona para a rota index
 
         }
         else
@@ -79,67 +79,6 @@ class UserController extends Controller
         {
             return response()->json(['success' => false,'message' => 'É necessário preencher todos os campos']);
         }
-    }
-
-    public function showLoginForm()
-    {
-        return view('user.login');
-    }
-
-    public function login(Request $request)
-    {
-        //Se não for um email valido
-        if(!filter_var($request->email, FILTER_VALIDATE_EMAIL)){
-            return redirect()->back()->withErrors(['O email informado não é válido']);
-        }
-
-        //Vetor associativo com os campos recebidos por request
-        $credentials = [
-            'email' => $request->email,
-            'password' => $request->password
-        ];
-
-        //Com os dados recebidos do login, tenta autenticar
-        if(Auth::attempt($credentials))
-        {
-            return redirect()->route('home');
-        }
-        else
-        {
-            //Caso não consiga autenticar, volta um caminho e envia uma mensagem de erro e devolve o input email
-            return redirect()->back()->withErrors(['Os dados informados não conferem']);
-        }
-    }
-
-    public function asyncLogin(Request $request)
-    {
-        //Se não for um email valido
-        if(!filter_var($request->email, FILTER_VALIDATE_EMAIL)){
-            return response()->json(['success' => false,'message' => 'O email informado não é válido']);
-        }
-
-        //Vetor associativo com os campos recebidos por request
-        $credentials = [
-            'email' => $request->email,
-            'password' => $request->password
-        ];
-
-        //Com os dados recebidos do login, tenta autenticar
-        if(Auth::attempt($credentials))
-        {
-            return response()->json(['success' => true]);
-        }
-        else
-        {
-            return response()->json(['success' => false,'message' => 'Os dados informados não conferem']);
-        }
-    }
-
-    public function logout()
-    {
-        Auth::logout();
-
-        return redirect()->route('home');
     }
 
     public function profile($id)

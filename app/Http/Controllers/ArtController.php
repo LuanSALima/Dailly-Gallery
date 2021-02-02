@@ -40,7 +40,7 @@ class ArtController extends Controller
         }
         else
         {
-            return redirect()->route('user.login')->withErrors(['É necessário estar logado para cadastrar uma arte']);
+            return redirect()->route('login')->withErrors(['É necessário estar logado para cadastrar uma arte']);
         }
     }
 

@@ -21,8 +21,6 @@ Route::get('/', function () {
 
 Route::view('/', 'site.layout')->name('home');
 
-Route::get('login', [App\Http\Controllers\UserController::class, 'showLoginForm'])->name('user.login');
-
 Route::get('registrar', [App\Http\Controllers\UserController::class, 'showRegisterForm'])->name('user.register');
 
 Route::get('conta/editar', [App\Http\Controllers\UserController::class, 'showEditAccountForm'])->name('account.edit');
@@ -32,10 +30,6 @@ Route::get('conta/senha', [App\Http\Controllers\UserController::class, 'showEdit
 Route::get('perfil/{user}', [App\Http\Controllers\UserController::class, 'profile'])->name('user.profile');
 
 Route::post('register/do', [App\Http\Controllers\UserController::class, 'register'])->name('user.register.do');
-
-Route::post('login/do', [App\Http\Controllers\UserController::class, 'login'])->name('user.login.do');
-
-Route::post('logout', [App\Http\Controllers\UserController::class, 'logout'])->name('user.logout');
 
 Route::post('arte/async/store', [App\Http\Controllers\ArtController::class, 'asyncStore'])->name('art.async.store');
 
@@ -60,3 +54,13 @@ Route::post('arte/favorite/{art_id}', [App\Http\Controllers\ArtFavoriteControlle
 Route::post('arte/comment/{art_id}', [App\Http\Controllers\ArtCommentController::class, 'comment'])->name('art.comment.store');
 
 Route::delete('arte/comment/{art_comment}', [App\Http\Controllers\ArtCommentController::class, 'destroy'])->name('art.comment.destroy');
+
+Route::get('login', [App\Http\Controllers\LoginController::class, 'showLoginForm'])->name('login');
+
+Route::post('login/do', [App\Http\Controllers\LoginController::class, 'login'])->name('login.do');
+
+Route::get('admin/registrar', [App\Http\Controllers\AdminController::class, 'showRegisterForm'])->name('admin.register')->middleware('auth:admin');
+
+Route::post('admin/registrar/do', [App\Http\Controllers\AdminController::class, 'register'])->name('admin.register.do');
+
+Route::post('logout', [App\Http\Controllers\LoginController::class, 'logout'])->name('logout');

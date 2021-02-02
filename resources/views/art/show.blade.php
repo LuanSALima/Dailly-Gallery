@@ -73,19 +73,21 @@
     <div class="container mt-5 w-50">
         <div id="mensagem-comentario"></div>
 
-        @if(Auth::check() && empty( $comment = (Auth::user()->comments->where('art', $art->id)->first())))
-        <form name="comment" action="{{ route('art.comment.store', ['art_id' => $art->id]) }}" method="POST">
-            @csrf
-            <textarea class="form-control border border-secondary" name="text" placeholder="Deixe seu comentário ..."></textarea>
-            <button name="button" class="btn-secondary btn-block my-2">Comentar</button>
-        </form>
-        @else
-        <form name="comment" action="{{ route('art.comment.destroy', ['art_comment' => $comment->id]) }}" method="POST">
-            @csrf
-            @method('delete')
-            <input name="delete" class="form-control border border-secondary" placeholder="{{ $comment->text }}" readonly></input>
-            <button name="button" class="btn-danger btn-block my-2">Remover</button>
-        </form>
+        @if(Auth::check())
+            @if(empty( $comment = (Auth::user()->comments->where('art', $art->id)->first())))
+            <form name="comment" action="{{ route('art.comment.store', ['art_id' => $art->id]) }}" method="POST">
+                @csrf
+                <textarea class="form-control border border-secondary" name="text" placeholder="Deixe seu comentário ..."></textarea>
+                <button name="button" class="btn-secondary btn-block my-2">Comentar</button>
+            </form>
+            @else
+            <form name="comment" action="{{ route('art.comment.destroy', ['art_comment' => $comment->id]) }}" method="POST">
+                @csrf
+                @method('delete')
+                <input name="delete" class="form-control border border-secondary" placeholder="{{ $comment->text }}" readonly></input>
+                <button name="button" class="btn-danger btn-block my-2">Remover</button>
+            </form>
+            @endif
         @endif
 
         @foreach($art->comments as $comment)

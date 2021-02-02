@@ -6,7 +6,7 @@ use App\Models\ArtLike;
 use Illuminate\Http\Request;
 
 //Dependências adicionadas
-use App\Models\Art; //Model Usuario
+use App\Models\Art; //Model Art
 use Illuminate\Support\Facades\Auth; //Métodos de autenticação
 use Illuminate\Http\Response; //Métodos para resposta em json
 

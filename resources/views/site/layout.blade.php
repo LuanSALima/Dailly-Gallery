@@ -26,30 +26,47 @@
                         <li class="nav-item">
                             <a class="nav-link {{ (Route::current()->getName() === 'art.create') ? 'active' : '' }}" href="{{ route('art.create') }}">Cadastrar Arte</a>
                         </li>
+                        @if(Auth::guard('admin')->check())
+                        <li class="nav-item">
+                            <a class="nav-link {{ (Route::current()->getName() === 'admin.register') ? 'active' : '' }}" href="{{ route('admin.register') }}">Cadastrar Admin</a>
+                        </li>
+                        @endif
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        
-                        @guest {{-- Caso não esteja logado --}}
+
+                        @if(!(Auth::guard('admin')->check()) && !(Auth::guard('user')->check())) {{-- Caso não esteja logado --}}
 
                         <li class="nav-item">
-                            <a class="nav-link {{ (Route::current()->getName() === 'user.login') ? 'active' : '' }}" href="{{ route('user.login') }}">Login</a>
+                            <a class="nav-link {{ (Route::current()->getName() === 'user.login') ? 'active' : '' }}" href="{{ route('login') }}">Login</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ (Route::current()->getName() === 'user.register') ? 'active' : '' }}" href="{{ route('user.register') }}">Registrar-se</a>
                         </li>
+                        
 
                         @else {{-- Caso esteja logado --}}
 
-                        <li class="nav-item dropdown mx-auto">
-                            <a class="nav-link dropdown-toggle" href="#"data-toggle="dropdown" >
-                              {{ Auth::user()->name }}
-                            </a>
-                            <div class="dropdown-menu">
-                              <a class="dropdown-item" href="{{ route('user.profile', ['user' => Auth::user()->id]) }}">Perfil</a>
-                              <a class="dropdown-item" href="{{ route('account.edit') }}">Editar Conta</a>
-                              <a class="dropdown-item" href="{{ route('account.password') }}">Alterar Senha</a>
-                            </div>
-                        </li>
+                            @if(Auth::guard('user')->check())
+                                <li class="nav-item dropdown mx-auto">
+                                    <a class="nav-link dropdown-toggle" href="#"data-toggle="dropdown" >
+                                        {{Auth::guard('user')->user()->name}}
+                                    </a>
+                                    <div class="dropdown-menu">
+                                      <a class="dropdown-item" href="{{ route('user.profile', ['user' => Auth::guard('user')->user()->id]) }}">Perfil</a>
+                                      <a class="dropdown-item" href="{{ route('account.edit') }}">Editar Conta</a>
+                                      <a class="dropdown-item" href="{{ route('account.password') }}">Alterar Senha</a>
+                                    </div>
+                                </li>
+                            @endif
+
+                            @if(Auth::guard('admin')->check())
+                            <li class="nav-item">
+                                <span class="nav-link">
+                                    {{Auth::guard('admin')->user()->name}}
+                                </span>
+                            </li> 
+                            @endif
+                            <li class="nav-item">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#"data-toggle="dropdown">
                                 <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-bell" fill="currentColor">
@@ -67,17 +84,17 @@
                             </div>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('user.logout') }}"
+                            <a class="nav-link" href="{{ route('logout') }}"
                                onclick="event.preventDefault();
                                              document.getElementById('logout-form').submit();">
                                 {{ __('Logout') }}
                             </a>
-                            <form id="logout-form" action="{{ route('user.logout') }}" method="POST" class="d-none">
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                 @csrf
                             </form>
                         </li>
                         
-                        @endguest
+                        @endif
                     </ul>
                 </div>
             </nav>

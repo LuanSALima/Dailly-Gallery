@@ -9,7 +9,7 @@
 <div class="h-100 py-5 row align-items-center justify-content-center">
     <div class="container w-50">
         <div class="text-center py-4">
-            <h2>Registrar-se</h2>
+            <h2>Cadastrar Admin</h2>
         </div>
         
         @if($errors->all()) {{-- Verifica se possui erros --}}
@@ -24,7 +24,7 @@
             
         </div>
 
-        <form id="formCad" action="{{ route('user.register.do') }}" method="POST">
+        <form id="formCad" action="{{ route('admin.register.do') }}" method="POST">
 
             @csrf
 
@@ -44,7 +44,7 @@
                 <input class="form-control" type="password" name="confirmPassword" placeholder="Confirmar Senha">
             </div>
 
-            <button class="btn btn-secondary btn-block my-2 bg-cyan">Registrar</button>
+            <button class="btn btn-secondary btn-block my-2 bg-cyan">Cadastrar</button>
         </form>
     </div>
 </div>
@@ -60,18 +60,23 @@
 
             event.preventDefault(); //Prevenindo o comportamento padrão (evento de submit)
 
+            var camposForm = new FormData($(this)[0]);
+            camposForm.append("json", 1);
+
             //Enviando um ajax
             $.ajax({
-                url: "{{ route('user.async.register') }}", //Rota que retornará JSON
+                url: "{{ route('admin.register.do') }}", //Rota que retornará JSON
                 type: "POST",
-                data: $(this).serialize(),
+                data: camposForm,
                 dataType: 'json',
+                contentType : false,
+                processData : false,
 
                 success: function(response){
                     if(response.success === true){
                         //Redirecionar
 
-                        window.location.href = "{{ route('login') }}";
+                        window.location.href = "{{ route('home') }}";
                     }else{
                         //Apresentar erro
 
