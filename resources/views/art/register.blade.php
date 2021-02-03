@@ -16,6 +16,7 @@
         <div class="alert alert-danger">
                 @foreach($errors->all() as $error) {{-- Para cada erro encontrado --}}
                     <span>{{ $error }}</span>
+                    <br>
                 @endforeach
         </div>
         @endif
@@ -55,7 +56,7 @@
 
             //Enviando um ajax
             $.ajax({
-                url: "{{ route('art.async.store') }}", //Rota que retornará JSON
+                url: "{{ route('art.store') }}", //Rota que retornará JSON
                 type: "POST",
                 contentType : false,
                 processData : false,

@@ -23,12 +23,13 @@
                         <li class="nav-item">
                             <a class="nav-link {{ (Route::current()->getName() === 'art.index') ? 'active' : '' }}" href="{{ route('art.index') }}">Listar Artes</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ (Route::current()->getName() === 'art.create') ? 'active' : '' }}" href="{{ route('art.create') }}">Cadastrar Arte</a>
-                        </li>
                         @if(Auth::guard('admin')->check())
                         <li class="nav-item">
                             <a class="nav-link {{ (Route::current()->getName() === 'admin.register') ? 'active' : '' }}" href="{{ route('admin.register') }}">Cadastrar Admin</a>
+                        </li>
+                        @else
+                        <li class="nav-item">
+                            <a class="nav-link {{ (Route::current()->getName() === 'art.create') ? 'active' : '' }}" href="{{ route('art.create') }}">Cadastrar Arte</a>
                         </li>
                         @endif
                     </ul>

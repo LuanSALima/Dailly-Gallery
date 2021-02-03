@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\User; //Model Usuario
 use Illuminate\Support\Facades\Auth; //Métodos de autenticação
 use Illuminate\Http\Response; //Métodos para resposta em json
+use Illuminate\Support\Facades\Validator; //Métodos para validar os dados
 
 class ArtController extends Controller
 {
@@ -34,7 +35,7 @@ class ArtController extends Controller
     public function create()
     {
         //Verifica se possui um usuário autenticado
-        if(Auth::check())
+        if(Auth::guard('user')->check())
         {
             return view('art.register');
         }
@@ -52,47 +53,59 @@ class ArtController extends Controller
      */
     public function store(Request $request)
     {
-        //Verifica se os campos foram preenchidos
-        if(!empty($request->title) && !empty($request->art))
+        //Variavel que receberá todas as regras e mensagens de validação
+        $validator = Validator::make(
+            $request->all(), //$request Possui todos os campos enviados por POST
+            $rules = [
+                'title' => 'required|min:5|max:30|unique:App\Models\Art,title',
+                'art' => 'required|image'
+            ],
+            $messages = [
+                //Mensagens para erros com o 'Title'
+                'title.required' => 'O título está vazio.',
+                'title.unique' => 'O título já está em uso',
+                'title.min' => 'O título é necessário pelo menos :min caracteres.',
+                'title.max' => 'O título possui um máximo de :max caracteres.',
+                //Mensagens para erros com o 'Art'
+                'art.required' => 'É necessário escolher uma imagem.',
+                'art.image' => 'O arquivo deve ser uma imagem',
+            ]
+        );
+
+        if ($validator->fails()) {
+            $errors = $validator->messages()->messages();
+            $mensagem = '';
+
+            foreach ($errors as $error) {
+                $mensagem = $mensagem.implode('<br>',$error).'<br>';
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false,'message' => $mensagem]);
+            } else {
+                return redirect()
+                        ->back()
+                        ->withErrors($validator)
+                        ->withInput();
+            }
+        }
+        else
         {
             $art = new Art(); //Cria um objeto da model Art
 
-            $idAuthor = Auth::user()->id; //Guarda o valor do ID do usuário autenticado
+            $idAuthor = Auth::guard('user')->user()->id; //Guarda o valor do ID do usuário autenticado
 
             $art->author = $idAuthor; //Campo author recebe o id do usuário autenticado
             $art->title = $request->title; //Campo titulo recebe o título escrito no formulário
             $art->path = $request->file('art')->store('art/'.$idAuthor); //Campo caminho recebe o caminho retornado do método de gravar arquivo no storage
 
             $art->save(); //Cadastra no banco de dados o author, título e caminho
-        }
-        else
-        {
-            return redirect()->back()->withInput()->withErrors(['É necessário preencher todos os campos']);
-        }
-    }
 
-    public function asyncStore(Request $request)
-    {
-        //Verifica se os campos foram preenchidos
-        if(!empty($request->title) && !empty($request->art))
-        {
-            $art = new Art(); //Cria um objeto da model Art
-
-            $idAuthor = Auth::user()->id; //Guarda o valor do ID do usuário autenticado
-
-            $art->author = $idAuthor; //Campo author recebe o id do usuário autenticado
-            $art->title = $request->title; //Campo titulo recebe o título escrito no formulário
-            $art->path = $request->file('art')->store('art/'.$idAuthor); //Campo caminho recebe o caminho retornado do método de gravar arquivo no storage
-
-            $art->save(); //Cadastra no banco de dados o author, título e caminho
-            
-            //Retorna um JSON com sucesso true
-            return response()->json(['success' => true]);
-        }
-        else
-        {
-            //Retorna um JSON com uma mensagem de erro e success falso
-            return response()->json(['success' => false,'message' => 'É necessário preencher todos os campos']);
+            if($request->expectsJson()){
+                return response()->json(['success' => true]);
+            }else{
+                return redirect()->route('home'); //Redireciona para a rota index
+            }
         }
     }
 

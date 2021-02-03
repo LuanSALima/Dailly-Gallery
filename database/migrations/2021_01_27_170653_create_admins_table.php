@@ -4,6 +4,9 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+//Dependências adicionadas
+use Illuminate\Support\Facades\Hash; //Métodos para gerar código hash
+
 class CreateAdminsTable extends Migration
 {
     /**
@@ -22,6 +25,15 @@ class CreateAdminsTable extends Migration
             $table->rememberToken();
             $table->timestamps();
         });
+
+        // Inserindo o primeiro admin
+        DB::table('admins')->insert(
+            array(
+                'name' => 'admin',
+                'email' => 'admin@gmail.com',
+                'password' => Hash::make('admin')
+            )
+        );
     }
 
     /**

@@ -31,19 +31,9 @@ Route::get('perfil/{user}', [App\Http\Controllers\UserController::class, 'profil
 
 Route::post('register/do', [App\Http\Controllers\UserController::class, 'register'])->name('user.register.do');
 
-Route::post('arte/async/store', [App\Http\Controllers\ArtController::class, 'asyncStore'])->name('art.async.store');
-
-Route::post('user/async/register', [App\Http\Controllers\UserController::class, 'asyncRegister'])->name('user.async.register');
-
-Route::post('user/async/login', [App\Http\Controllers\UserController::class, 'asyncLogin'])->name('user.async.login');
-
 Route::patch('account/edit/do', [App\Http\Controllers\UserController::class, 'editAccount'])->name('account.edit.do');
 
-Route::patch('account/async/edit', [App\Http\Controllers\UserController::class, 'asyncEditAccount'])->name('account.async.edit');
-
 Route::patch('account/password/edit', [App\Http\Controllers\UserController::class, 'editPassword'])->name('account.password.edit');
-
-Route::patch('account/async/password/edit', [App\Http\Controllers\UserController::class, 'asyncEditPassword'])->name('account.async.password');
 
 Route::resource('arte', 'App\Http\Controllers\ArtController')->names('art')->parameters(['arte' => 'art']);
 
@@ -64,3 +54,7 @@ Route::get('admin/registrar', [App\Http\Controllers\AdminController::class, 'sho
 Route::post('admin/registrar/do', [App\Http\Controllers\AdminController::class, 'register'])->name('admin.register.do');
 
 Route::post('logout', [App\Http\Controllers\LoginController::class, 'logout'])->name('logout');
+
+Route::post('perfil/foto', [App\Http\Controllers\UserController::class, 'changeUserProfilePicture'])->name('profile.pic');
+
+Route::post('perfil/fundo', [App\Http\Controllers\UserController::class, 'changeUserProfileBackground'])->name('profile.bg');

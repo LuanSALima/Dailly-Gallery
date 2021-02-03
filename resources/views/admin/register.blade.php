@@ -16,6 +16,7 @@
         <div class="alert alert-danger">
                 @foreach($errors->all() as $error) {{-- Para cada erro encontrado --}}
                     <span>{{ $error }}</span>
+                    <br>
                 @endforeach
         </div>
         @endif

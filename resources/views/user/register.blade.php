@@ -16,6 +16,7 @@
         <div class="alert alert-danger">
                 @foreach($errors->all() as $error) {{-- Para cada erro encontrado --}}
                     <span>{{ $error }}</span>
+                    <br>
                 @endforeach
         </div>
         @endif
@@ -62,7 +63,7 @@
 
             //Enviando um ajax
             $.ajax({
-                url: "{{ route('user.async.register') }}", //Rota que retornará JSON
+                url: "{{ route('user.register.do') }}", //Rota que retornará JSON
                 type: "POST",
                 data: $(this).serialize(),
                 dataType: 'json',

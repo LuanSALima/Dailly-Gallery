@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash; //Métodos para gerar código hash
 use Illuminate\Support\Facades\Auth; //Métodos de autenticação
 use Illuminate\Http\Response; //Métodos para resposta em json
+use Illuminate\Support\Facades\Validator; //Métodos para validar os dados
 
 class AdminController extends Controller
 {
@@ -24,48 +25,67 @@ class AdminController extends Controller
     
     public function register(Request $request)
     {
-        //$request Possui todos os campos enviados por POST
+        //Variavel que receberá todas as regras e mensagens de validação
+        $validator = Validator::make(
+            $request->all(), //$request Possui todos os campos enviados por POST
+            $rules = [
+                'name' => 'required|min:5|max:30',
+                'email' => 'required|email|min:3|max:30|unique:App\Models\Admin,email|unique:App\Models\User,email',
+                'password' => 'required|min:3|max:30',
+                'confirmPassword' => 'required_with:password|same:password|min:3|max:30'
+            ],
+            $messages = [
+                //Mensagens para erros com o 'Name'
+                'name.required' => 'O nome está vazio.',
+                'name.min' => 'O nome é necessário pelo menos :min caracteres.',
+                'name.max' => 'O nome possui um máximo de :max caracteres.',
+                //Mensagens para erros com o 'Password'
+                'password.required' => 'A senha está vazia.',
+                'password.min' => 'A senha deve possuir pelo menos :min caracteres.',
+                'password.max' => 'A senha deve possuir no máximo :max caracteres.',
+                //Mensagens para erros com o 'ConfirmPassword'
+                'confirmPassword.required_with' => 'É necessário confirmar a senha.',
+                'confirmPassword.same' => 'As senhas não coincidem.',
+                'confirmPassword.min' => 'O confirmar senha deve possuir pelo menos :min caracteres.',
+                'confirmPassword.max' => 'O confirmar senha deve possuir no máximo :max caracteres.',
+                //Mensagens para os demais erros
+                'required' => 'O :attribute está vazio.',
+                'email' => 'O :attribute é inválido.',
+                'unique' => 'O email já está em uso',
+                'min' => 'O :attribute é necessário pelo menos :min caracteres.',
+                'max' => 'O :attribute possui um máximo de :max caracteres.',
+            ]
+        );
 
-        //Se nenhum campo está vazio
-        if(!empty($request->name) && !empty($request->email) && !empty($request->password) && !empty($request->confirmPassword))
+        if ($validator->fails()) {
+            $errors = $validator->messages()->messages();
+            $mensagem = '';
+
+            foreach ($errors as $error) {
+                $mensagem = $mensagem.implode('<br>',$error).'<br>';
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false,'message' => $mensagem]);
+            } else {
+                return redirect()
+                        ->back()
+                        ->withErrors($validator)
+                        ->withInput();
+            }
+        }
+        else
         {
-            //Se o email não for válido
-            if(!filter_var($request->email, FILTER_VALIDATE_EMAIL)){
-                if($request->json){
-                    return response()->json(['success' => false,'message' => 'O email informado não é valido']);
-                }else{
-                    return redirect()->back()->withInput()->withErrors(['O email informado não é valido']);
-                }
-            }
-
-            //Se o campo senha estiver diferente do confirmar senha
-            if($request->password != $request->confirmPassword)
-            {
-                if($request->json){
-                    return response()->json(['success' => false,'message' => 'As senhas não coincidem']);
-                }else{
-                    return redirect()->back()->withInput()->withErrors(['As senhas não coincidem']);
-                }
-            }
-
-            $admin = new Admin(); //Instancia a Model User
+            $admin = new Admin(); //Instancia a Model Admin
             $admin->name = $request->name;  //Adiciona Nome ao objeto            
             $admin->email = $request->email; //Adiciona Email ao objeto
             $admin->password = Hash::make($request->password); //Adiciona senha criptografada ao objeto
             $admin->save(); //Grava no banco de dados
 
-            if($request->json){
+            if($request->expectsJson()){
                 return response()->json(['success' => true]);
             }else{
                 return redirect()->route('home'); //Redireciona para a rota index
-            }
-        }
-        else
-        {
-            if($request->json){
-                return response()->json(['success' => false,'message' => 'É necessário preencher todos os campos']);
-            }else{
-                return redirect()->back()->withInput()->withErrors(['É necessário preencher todos os campos']);
             }
         }
     }

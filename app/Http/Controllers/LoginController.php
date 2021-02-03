@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; //Métodos de autenticação
 use Illuminate\Http\Response; //Métodos para resposta em json
 use Illuminate\Support\Facades\Hash; //Métodos para gerar código hash
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Validator; //Métodos para validar os dados
 
 class LoginController extends Controller
 {
@@ -30,13 +30,17 @@ class LoginController extends Controller
             $request->all(),
             $rules = [
                 'email' => 'required|email|min:3|max:30',
-                'senha' => 'required|min:3|max:30'
+                'password' => 'required|min:3|max:30'
             ],
             $messages = [
                 'required' => 'O :attribute está vazio.',
                 'email' => 'O :attribute é inválido.',
                 'min' => 'O :attribute é necessário pelo menos :min caracteres.',
-                'max' => 'O :attribute possui um máximo de :max caracteres.'
+                'max' => 'O :attribute possui um máximo de :max caracteres.',
+
+                'password.required' => 'A senha está vazia.',
+                'password.min' => 'A senha deve possuir pelo menos :min caracteres.',
+                'password.max' => 'A senha deve possuir no máximo :max caracteres.'
             ]
         );
 
@@ -49,9 +53,9 @@ class LoginController extends Controller
                 $mensagem = $mensagem.implode('<br>',$error).'<br>';
             }
 
-            if($request->expectsJson()){
+            if ($request->expectsJson()) {
                 return response()->json(['success' => false,'message' => $mensagem]);
-            }else{
+            } else {
                 return redirect()
                         ->back()
                         ->withErrors($validator)
@@ -61,30 +65,23 @@ class LoginController extends Controller
 
         $credentials = [
             'email' => $request->email,
-            'password' => $request->senha
+            'password' => $request->password
         ];
 
         if(Auth::guard('admin')->attempt($credentials) || Auth::guard('user')->attempt($credentials))
         {
-            if($request->expectsJson())
-            {
+            if ($request->expectsJson()) {
                 return response()->json(['success' => true]);
-            }
-            else
-            {
+            } else {
                 return redirect()->route('home');
             }
-            
         }
         else
         {
             $errorMessage = 'Os dados informados não conferem';
-            if($request->expectsJson())
-            {
+            if ($request->expectsJson()) {
                 return response()->json(['success' => false,'message' => $errorMessage]);
-            }
-            else
-            {
+            } else {
                 return redirect()->back()->withErrors([$errorMessage]);
             }
         }

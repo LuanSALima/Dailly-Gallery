@@ -34,7 +34,7 @@
 			</div>
 
 			<div class="form-group">
-				<input class="form-control" type="password" name="senha" placeholder="Senha">
+				<input class="form-control" type="password" name="password" placeholder="Senha">
 			</div>
 			
 			<div class="form-group text-center">

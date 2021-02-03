@@ -16,6 +16,7 @@
         <div class="alert alert-danger">
                 @foreach($errors->all() as $error) {{-- Para cada erro encontrado --}}
                     <span>{{ $error }}</span>
+                    <br>
                 @endforeach
         </div>
         @endif
@@ -57,8 +58,8 @@
 
             //Enviando um ajax
             $.ajax({
-                url: "{{ route('account.async.edit') }}", //Rota que retornará JSON
-                type: "PATCH",
+                url: "{{ route('account.edit.do') }}", //Rota que retornará JSON
+                type: "POST",
                 data: $(this).serialize(),
                 dataType: 'json',
 
