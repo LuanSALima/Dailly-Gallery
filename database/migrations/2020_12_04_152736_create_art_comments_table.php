@@ -23,8 +23,8 @@ class CreateArtCommentsTable extends Migration
 
             $table->timestamps();
 
-            $table->foreign('user')->references('id')->on('users');
-            $table->foreign('art')->references('id')->on('art');
+            $table->foreign('user')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('art')->references('id')->on('art')->onDelete('cascade');
         });
     }
 

@@ -2,14 +2,14 @@
 
 
 {{-- Definindo o título da página --}}
-@section('title', 'Cadastrar Arte')
+@section('title', 'Editar Arte')
 
 {{-- Definindo o conteudo da página --}}
 @section('content')
 <div class="h-100 py-5 row align-items-center justify-content-center">
     <div class="container w-50">
-        <div class="text-center py-4">
-            <h2>Cadastrar Arte</h2>
+        <div class="text-center py-1">
+            <h2>Editar Arte</h2>
         </div>
         
         @if($errors->all()) {{-- Verifica se possui erros --}}
@@ -25,19 +25,24 @@
             
         </div>
 
-        <form id="formArt" action="{{ route('art.store') }}" method="POST" enctype="multipart/form-data">
+        <div class="row justify-content-center">
+            <img class="p-4" src="http://localhost/Dailly-Gallery/public/storage/{{ $art->path }}">
+        </div>
 
+        <form id="formArt" action="{{ route('art.edit', ['art' => $art->id]) }}" method="POST" enctype="multipart/form-data">
+
+            @method('PATCH')
             @csrf
 
             <div class="form-group">
-                <input class="form-control" type="text" name="title" placeholder="Título">
+                <input class="form-control" type="text" name="title" placeholder="Título" value="{{ $art->title }}">
             </div>
 
             <div class="form-group">
                 <input class="form-control" type="file" name="art">
             </div>            
 
-            <button class="btn btn-secondary btn-block my-2 bg-cyan">Cadastrar</button>
+            <button class="btn btn-secondary btn-block my-2 bg-cyan">Editar</button>
         </form>
     </div>
 </div>
@@ -56,7 +61,7 @@
 
             //Enviando um ajax
             $.ajax({
-                url: "{{ route('art.store') }}", //Rota que retornará JSON
+                url: "{{ route('art.update', ['art' => $art->id]) }}", //Rota que retornará JSON
                 type: "POST",
                 contentType : false,
                 processData : false,

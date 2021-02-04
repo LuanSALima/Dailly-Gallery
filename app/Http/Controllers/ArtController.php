@@ -104,7 +104,9 @@ class ArtController extends Controller
             if($request->expectsJson()){
                 return response()->json(['success' => true]);
             }else{
-                return redirect()->route('home'); //Redireciona para a rota index
+                return view('user.profile', [
+                    'user' => Auth::guard('user')->user()
+                ]);
             }
         }
     }
@@ -130,7 +132,27 @@ class ArtController extends Controller
      */
     public function edit(Art $art)
     {
-        //
+        if(Auth::guard('user')->check())
+        {
+            if($art->author()->first()->id == Auth::guard('user')->user()->id)
+            {
+                //Retorna a View enviando a variavel $user junto
+                return view('art.edit', [
+                    'art' => $art
+                ]);
+            }
+            else
+            {
+                return redirect()
+                        ->route('user.profile', [
+                            'user' => Auth::guard('user')->user()])
+                        ->withErrors(['Está arte não é sua']);
+            }
+        }
+        else
+        {
+            return redirect()->route('home');
+        }
     }
 
     /**
@@ -142,7 +164,57 @@ class ArtController extends Controller
      */
     public function update(Request $request, Art $art)
     {
-        //
+        //Variavel que receberá todas as regras e mensagens de validação
+        $validator = Validator::make(
+            $request->all(), //$request Possui todos os campos enviados por POST
+            $rules = [
+                'title' => 'required|min:5|max:30|unique:App\Models\Art,title,'.$art->id,
+                'art' => 'image'
+            ],
+            $messages = [
+                //Mensagens para erros com o 'Title'
+                'title.required' => 'O título está vazio.',
+                'title.unique' => 'O título já está em uso',
+                'title.min' => 'O título é necessário pelo menos :min caracteres.',
+                'title.max' => 'O título possui um máximo de :max caracteres.',
+                //Mensagens para erros com o 'Art'
+                'art.image' => 'O arquivo deve ser uma imagem',
+            ]
+        );
+
+        if ($validator->fails()) {
+            $errors = $validator->messages()->messages();
+            $mensagem = '';
+
+            foreach ($errors as $error) {
+                $mensagem = $mensagem.implode('<br>',$error).'<br>';
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false,'message' => $mensagem]);
+            } else {
+                return redirect()
+                        ->back()
+                        ->withErrors($validator)
+                        ->withInput();
+            }
+        }
+        else
+        {
+            $art->title = $request->title;
+            if($request->file('art')){
+                $art->path = $request->file('art')->store('art/'.$art->author);
+            }
+            $art->save();
+
+            if($request->expectsJson()){
+                return response()->json(['success' => true]);
+            }else{
+                return view('user.profile', [
+                    'user' => Auth::guard('user')->user()->id
+                ]);
+            }
+        }
     }
 
     /**
@@ -153,6 +225,23 @@ class ArtController extends Controller
      */
     public function destroy(Art $art)
     {
-        //
+        if(Auth::guard('user')->check())
+        {
+            if($art->author()->first()->id == Auth::guard('user')->user()->id)
+            {
+                $art->delete();
+
+                return view('user.profile', [
+                    'user' => Auth::guard('user')->user()
+                ]);
+            }
+            else
+            {
+                return redirect()
+                        ->back()
+                        ->withErrors(['Está arte não é sua']);
+            }
+        }
+        
     }
 }

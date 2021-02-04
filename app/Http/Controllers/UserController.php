@@ -89,10 +89,10 @@ class UserController extends Controller
 
     public function showEditAccountForm()
     {
-        if(Auth::check())
+        if(Auth::guard('user')->check())
         {
             //Busca o usuário através do id do usuário autenticado
-            $user = User::where('id', Auth::user()->id)->first();
+            $user = User::where('id', Auth::guard('user')->user()->id)->first();
 
             //Retorna a View enviando a variavel $user junto
             return view('user.edit-account', [
@@ -168,7 +168,7 @@ class UserController extends Controller
 
     public function showEditPasswordForm()
     {
-        if(Auth::check())
+        if(Auth::guard('user')->check())
         {
             return view('user.edit-password');
         }
