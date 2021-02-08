@@ -73,4 +73,9 @@ class User extends Authenticatable
         //Usuário cadastra varios comentários
         return $this->hasMany(ArtComment::class, 'user', 'id');
     }
+
+    public function artChange()
+    {
+        return $this->hasOneThrough(Art::class, ArtChange::class);
+    }
 }

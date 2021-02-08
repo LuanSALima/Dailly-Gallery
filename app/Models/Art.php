@@ -38,4 +38,9 @@ class Art extends Model
         //Arte possui varios comentários
         return $this->hasMany(ArtComment::class, 'art', 'id');
     }
+
+    public function artChange()
+    {
+        return $this->hasOne(ArtChange::class, 'art', 'id');
+    }
 }

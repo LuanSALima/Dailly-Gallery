@@ -58,3 +58,9 @@ Route::post('logout', [App\Http\Controllers\LoginController::class, 'logout'])->
 Route::post('perfil/foto', [App\Http\Controllers\UserController::class, 'changeUserProfilePicture'])->name('profile.pic');
 
 Route::post('perfil/fundo', [App\Http\Controllers\UserController::class, 'changeUserProfileBackground'])->name('profile.bg');
+
+Route::get('admin/art-requests-list', [App\Http\Controllers\AdminController::class, 'artRequestList'])->name('admin.art.requestlist')->middleware('auth:admin');
+
+Route::get('admin/art-request/{art}', [App\Http\Controllers\AdminController::class, 'artRequest'])->name('admin.art.request')->middleware('auth:admin');
+
+Route::patch('admin/art-request/{art}/do', [App\Http\Controllers\AdminController::class, 'artRequestChange'])->name('admin.art.request.do')->middleware('auth:admin');

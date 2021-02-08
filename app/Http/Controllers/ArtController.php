@@ -20,7 +20,7 @@ class ArtController extends Controller
      */
     public function index()
     {
-        $arts = Art::all();
+        $arts = Art::where('status', '=', 'accepted')->get();
 
         return view('art.list', [
             'arts' => $arts

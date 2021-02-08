@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateArtTable extends Migration
+class CreateArtChangesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateArtTable extends Migration
      */
     public function up()
     {
-        Schema::create('art', function (Blueprint $table) {
+        Schema::create('art_changes', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('author');
-            $table->string('title');
-            $table->string('path');
+            $table->unsignedBigInteger('art')->unique();
+            $table->string('new_title');
+            $table->string('new_image_path');
 
             $table->set('status', ['pendent', 'accepted', 'rejected'])->default('pendent');
 
@@ -30,7 +30,7 @@ class CreateArtTable extends Migration
 
             $table->timestamps();
 
-            $table->foreign('author')->references('id')->on('users');
+            $table->foreign('art')->references('id')->on('art');
         });
     }
 
@@ -41,6 +41,6 @@ class CreateArtTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('arte');
+        Schema::dropIfExists('art_changes');
     }
 }

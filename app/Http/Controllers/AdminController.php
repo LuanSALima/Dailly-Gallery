@@ -6,6 +6,7 @@ use App\Models\Admin;
 use Illuminate\Http\Request;
 
 //Dependências adicionadas
+use App\Models\Art; //Model Art
 use Illuminate\Support\Facades\Hash; //Métodos para gerar código hash
 use Illuminate\Support\Facades\Auth; //Métodos de autenticação
 use Illuminate\Http\Response; //Métodos para resposta em json
@@ -81,6 +82,91 @@ class AdminController extends Controller
             $admin->email = $request->email; //Adiciona Email ao objeto
             $admin->password = Hash::make($request->password); //Adiciona senha criptografada ao objeto
             $admin->save(); //Grava no banco de dados
+
+            if($request->expectsJson()){
+                return response()->json(['success' => true]);
+            }else{
+                return redirect()->route('home'); //Redireciona para a rota index
+            }
+        }
+    }
+
+    public function artRequestList()
+    {
+        $arts = Art::where('status', '=', 'pendent')->get();
+
+        return view('admin.art-requestlist', [
+            'arts' => $arts
+        ]);
+    }
+
+    public function artRequest(Art $art)
+    {
+        return view('admin.art-request', [
+            'art' => $art
+        ]);
+    }
+
+    public function artRequestChange(Request $request, Art $art)
+    {
+        $rules = ['reason'];
+
+        if($request->has('reject'))
+        {
+            $rules['reason'] = 'required|min:10|max:150';
+        }
+
+        //Variavel que receberá todas as regras e mensagens de validação
+        $validator = Validator::make(
+            $request->all(), //$request Possui todos os campos enviados por POST
+            $rules,
+            $messages = [
+                'reason.required' => 'É necessário escrever o motivo pelo qual foi a arte foi rejeitada.',
+                'reason.min' => 'O motivo deve possuir pelo menos :min caracteres.',
+                'reason.max' => 'O motivo deve possuir no máximo :max caracteres.',
+            ]
+        );
+
+        if ($validator->fails()) {
+            $errors = $validator->messages()->messages();
+            $mensagem = '';
+
+            foreach ($errors as $error) {
+                $mensagem = $mensagem.implode('<br>',$error).'<br>';
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false,'message' => $mensagem]);
+            } else {
+                return redirect()
+                        ->back()
+                        ->withErrors($validator)
+                        ->withInput();
+            }
+        }
+        else
+        {
+            if($request->aprove)
+            {
+                $art->status = 'accepted';
+                $art->status_changed_by = Auth::guard('admin')->user()->id;
+                $art->save();
+            }
+            else if($request->reject)
+            {
+                $art->status = 'rejected';
+                $art->status_changed_by = Auth::guard('admin')->user()->id;
+                $art->message_status = $request->reason;
+                $art->save();
+            }
+            else
+            {
+                if($request->expectsJson()){
+                    return response()->json(['success' => false,'message' => 'Erro inesperado']);
+                }else{
+                    return redirect()->back()->withErrors('Erro inesperado');
+                }
+            }
 
             if($request->expectsJson()){
                 return response()->json(['success' => true]);
