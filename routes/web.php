@@ -59,8 +59,10 @@ Route::post('perfil/foto', [App\Http\Controllers\UserController::class, 'changeU
 
 Route::post('perfil/fundo', [App\Http\Controllers\UserController::class, 'changeUserProfileBackground'])->name('profile.bg');
 
-Route::get('admin/art-requests-list', [App\Http\Controllers\AdminController::class, 'artRequestList'])->name('admin.art.requestlist')->middleware('auth:admin');
+Route::get('requisicao/arte', [App\Http\Controllers\ArtController::class, 'showArtsRequestList'])->name('art.requestlist');
 
-Route::get('admin/art-request/{art}', [App\Http\Controllers\AdminController::class, 'artRequest'])->name('admin.art.request')->middleware('auth:admin');
+Route::get('requisicao/arte/{art}', [App\Http\Controllers\ArtController::class, 'showArtRequest'])->name('art.request');
 
-Route::patch('admin/art-request/{art}/do', [App\Http\Controllers\AdminController::class, 'artRequestChange'])->name('admin.art.request.do')->middleware('auth:admin');
+Route::patch('arte/mudar-status/{art}', [App\Http\Controllers\ArtController::class, 'artStatusChange'])->name('art.status.change');
+
+Route::get('requisicao/editar-arte/{artChange}', [App\Http\Controllers\ArtChangeController::class, 'showArtEditRequest'])->name('art.requestedit');

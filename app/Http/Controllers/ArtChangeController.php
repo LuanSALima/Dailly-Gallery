@@ -5,81 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\ArtChange;
 use Illuminate\Http\Request;
 
+//Dependências adicionadas
+use Illuminate\Support\Facades\Auth; //Métodos de autenticação
+use Illuminate\Http\Response; //Métodos para resposta em json
+use Illuminate\Support\Facades\Validator; //Métodos para validar os dados
+
 class ArtChangeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function showArtEditRequest(ArtChange $artChange)
     {
-        //
-    }
+        if(Auth::guard('user')->check())
+        {
+            if($artChange->author()->id != Auth::guard('user')->user()->id){
+                return redirect()->route('art.requestlist')->withErrors(['Esta arte não é sua']);
+            }
+        }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\ArtChange  $artChange
-     * @return \Illuminate\Http\Response
-     */
-    public function show(ArtChange $artChange)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\ArtChange  $artChange
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(ArtChange $artChange)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ArtChange  $artChange
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, ArtChange $artChange)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\ArtChange  $artChange
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(ArtChange $artChange)
-    {
-        //
+        return view('art.request-edit', [
+            'artChange' => $artChange
+        ]);
     }
 }

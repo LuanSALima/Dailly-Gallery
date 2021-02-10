@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 //Dependências adicionadas
 use App\Models\User; //Model Usuario
+use App\Models\Art; //Model Art
 use Illuminate\Support\Facades\Hash; //Métodos para gerar código hash
 use Illuminate\Support\Facades\Auth; //Métodos de autenticação
 use Illuminate\Http\Response; //Métodos para resposta em json

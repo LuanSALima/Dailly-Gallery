@@ -11,13 +11,13 @@ class ArtChange extends Model
 
     protected $table = 'art_changes';
 
-    public function author()
-    {
-    	return $this->hasOneThrough(Art::class, User::class);
-    }
-
     public function art()
     {
         return $this->belongsTo(Art::class, 'art', 'id');
+    }
+    
+    public function author()
+    {
+        return User::where('id', Art::where('id', $this->art)->first()->author)->first();
     }
 }

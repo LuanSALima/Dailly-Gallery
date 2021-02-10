@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 //Dependências adicionadas
 use App\Models\User; //Model Usuario
+use App\Models\ArtChange;
 use Illuminate\Support\Facades\Auth; //Métodos de autenticação
 use Illuminate\Http\Response; //Métodos para resposta em json
 use Illuminate\Support\Facades\Validator; //Métodos para validar os dados
@@ -201,18 +202,62 @@ class ArtController extends Controller
         }
         else
         {
-            $art->title = $request->title;
-            if($request->file('art')){
-                $art->path = $request->file('art')->store('art/'.$art->author);
-            }
-            $art->save();
+            if($art->status == 'accepted')
+            {
+                if(!ArtChange::where('art', '=', $art->id)->exists())
+                {
+                    $artEdit = new ArtChange();
 
-            if($request->expectsJson()){
-                return response()->json(['success' => true]);
-            }else{
-                return view('user.profile', [
-                    'user' => Auth::guard('user')->user()->id
-                ]);
+                    $artEdit->art = $art->id;
+
+                    $artEdit->new_title = $request->title;
+
+                    if($request->file('art')){
+                        $artEdit->new_image_path = $request->file('art')->store('art/'.$idAuthor);
+                    }else{
+                        $artEdit->new_image_path = $art->path;
+                    }
+
+                    $artEdit->save();
+
+                    if($request->expectsJson()){
+                        return response()->json(['success' => true]);
+                    }else{
+                        return view('user.profile', [
+                            'user' => Auth::guard('user')->user()->id
+                        ]);
+                    }
+                }
+                else
+                {
+                    $error = "Já possui uma requisição para esta imagem <a href=''>clique aqui para saber mais</a>.";
+
+                    if ($request->expectsJson()) {
+                        return response()->json(['success' => false,'message' => $error]);
+                    } else {
+                        return redirect()
+                                ->back()
+                                ->withErrors($error)
+                                ->withInput();
+                    }
+                }
+            }
+            else
+            {
+                $art->title = $request->title;
+                if($request->file('art')){
+                    $art->path = $request->file('art')->store('art/'.$art->author);
+                }
+                $art->status = 'pendent';
+                $art->save();
+
+                if($request->expectsJson()){
+                    return response()->json(['success' => true]);
+                }else{
+                    return view('user.profile', [
+                        'user' => Auth::guard('user')->user()->id
+                    ]);
+                }
             }
         }
     }
@@ -243,5 +288,124 @@ class ArtController extends Controller
             }
         }
         
+    }
+
+    public function showArtsRequestList()
+    {
+        $arts = null;
+        $artChanges = null;
+
+        if (Auth::guard('user')->check())
+        {
+            $loggedUser = Auth::guard('user')->user();
+
+            $arts = $loggedUser->arts()->where('status', '!=', 'accepted')->get();
+            $artChanges = $loggedUser->artChanges()->get();
+        }
+        else if (Auth::guard('admin')->check())
+        {
+            $arts = Art::where('status', '=', 'pendent')->get();
+            $artChanges = ArtChange::where('status', '=', 'pendent')->get();
+        }
+        else
+        {
+            return redirect()->route('login')->withErrors(['É necessário estar logado']);
+        }
+
+        return view('art.request-list', [
+            'arts' => $arts,
+            'artChanges' => $artChanges
+        ]);
+    }
+
+    public function showArtRequest(Art $art)
+    {
+        if(Auth::guard('user')->check())
+        {
+            if($art->author != Auth::guard('user')->user()->id){
+                return redirect()->route('art.requestlist')->withErrors(['Esta arte não é sua']);
+            }
+        }
+
+        return view('art.request', [
+            'art' => $art
+        ]);
+    }
+
+    public function artStatusChange(Request $request, Art $art)
+    {
+        if(!Auth::guard('admin')->check()){
+            if($request->expectsJson()){
+                return response()->json(['success' => false,'message' => 'É necessário que seja um Administrador para alterar o status']);
+            }else{
+                return redirect()->back()->withErrors('É necessário que seja um Administrador para alterar o status');
+            }
+        }
+
+        $rules = ['reason'];
+
+        if($request->has('reject'))
+        {
+            $rules['reason'] = 'required|min:10|max:150';
+        }
+
+        //Variavel que receberá todas as regras e mensagens de validação
+        $validator = Validator::make(
+            $request->all(), //$request Possui todos os campos enviados por POST
+            $rules,
+            $messages = [
+                'reason.required' => 'É necessário escrever o motivo pelo qual foi a arte foi rejeitada.',
+                'reason.min' => 'O motivo deve possuir pelo menos :min caracteres.',
+                'reason.max' => 'O motivo deve possuir no máximo :max caracteres.',
+            ]
+        );
+
+        if ($validator->fails()) {
+            $errors = $validator->messages()->messages();
+            $mensagem = '';
+
+            foreach ($errors as $error) {
+                $mensagem = $mensagem.implode('<br>',$error).'<br>';
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false,'message' => $mensagem]);
+            } else {
+                return redirect()
+                        ->back()
+                        ->withErrors($validator)
+                        ->withInput();
+            }
+        }
+        else
+        {
+            if($request->aprove)
+            {
+                $art->status = 'accepted';
+                $art->status_changed_by = Auth::guard('admin')->user()->id;
+                $art->save();
+            }
+            else if($request->reject)
+            {
+                $art->status = 'rejected';
+                $art->status_changed_by = Auth::guard('admin')->user()->id;
+                $art->message_status = $request->reason;
+                $art->save();
+            }
+            else
+            {
+                if($request->expectsJson()){
+                    return response()->json(['success' => false,'message' => 'Erro inesperado']);
+                }else{
+                    return redirect()->back()->withErrors('Erro inesperado');
+                }
+            }
+
+            if($request->expectsJson()){
+                return response()->json(['success' => true]);
+            }else{
+                return redirect()->route('home'); //Redireciona para a rota index
+            }
+        }
     }
 }

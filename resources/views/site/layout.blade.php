@@ -32,25 +32,28 @@
                               Requisições
                             </a>
                             <div class="dropdown-menu">
-                              <a class="dropdown-item {{ (Route::current()->getName() === 'admin.art.requestlist') ? 'active' : '' }}" href="{{ route('admin.art.requestlist') }}">Novas Artes</a>
-                              <a class="dropdown-item" href="#">Another action</a>
-                              <div class="dropdown-divider"></div>
-                              <a class="dropdown-item" href="#">Something else here</a>
+                              <a class="dropdown-item" href="{{ route('art.requestlist') }}">Artes</a>
                             </div>
                         </li>
                         
-                        @else
-                        <li class="nav-item dropdown mx-auto">
-                            <a class="nav-link dropdown-toggle" href="#"data-toggle="dropdown" >
-                                Arte
-                            </a>
-                            <div class="dropdown-menu">
-                              <a class="dropdown-item" href="{{ route('art.create') }}">Cadastrar Arte</a>
-                              <a class="dropdown-item" href="">Artes Pendentes</a>
-                              <a class="dropdown-item" href="">Artes Bloqueadas</a>
-                            </div>
-                        </li>
-                        
+                        @else 
+                            @if(Auth::guard('user')->check())
+                            <li class="nav-item dropdown mx-auto">
+                                <a class="nav-link dropdown-toggle" href="#"data-toggle="dropdown" >
+                                    Arte
+                                </a>
+                                <div class="dropdown-menu">
+                                  <a class="dropdown-item" href="{{ route('art.create') }}">Cadastrar Arte</a>
+                                  <a class="dropdown-item" href="{{ route('art.requestlist') }}">Artes Pendentes</a>
+                                </div>
+                            </li>
+                            @else
+                            <li class="nav-item">
+                                <a href="{{ route('art.create') }}" class="nav-link">
+                                    Cadastrar Arte
+                                </a>
+                            </li>
+                            @endif
                         @endif
                     </ul>
                     <ul class="nav navbar-nav navbar-right">

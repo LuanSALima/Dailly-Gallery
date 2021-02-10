@@ -29,7 +29,7 @@
             <img class="p-4" src="http://localhost/Dailly-Gallery/public/storage/{{ $art->path }}">
         </div>
 
-        <form id="formArt" action="{{ route('art.edit', ['art' => $art->id]) }}" method="POST" enctype="multipart/form-data">
+        <form id="formArt" action="{{ route('art.update', ['art' => $art->id]) }}" method="POST" enctype="multipart/form-data">
 
             @method('PATCH')
             @csrf

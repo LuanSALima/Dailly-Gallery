@@ -74,8 +74,8 @@ class User extends Authenticatable
         return $this->hasMany(ArtComment::class, 'user', 'id');
     }
 
-    public function artChange()
+    public function artChanges()
     {
-        return $this->hasOneThrough(Art::class, ArtChange::class);
+        return $this->hasManyThrough(ArtChange::class, Art::class, 'author', 'art', 'id', 'id');
     }
 }

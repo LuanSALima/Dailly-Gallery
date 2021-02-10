@@ -17,6 +17,7 @@ class CreateArtChangesTable extends Migration
             $table->id();
 
             $table->unsignedBigInteger('art')->unique();
+
             $table->string('new_title');
             $table->string('new_image_path');
 
