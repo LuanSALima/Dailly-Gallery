@@ -66,3 +66,7 @@ Route::get('requisicao/arte/{art}', [App\Http\Controllers\ArtController::class, 
 Route::patch('arte/mudar-status/{art}', [App\Http\Controllers\ArtController::class, 'artStatusChange'])->name('art.status.change');
 
 Route::get('requisicao/editar-arte/{artChange}', [App\Http\Controllers\ArtChangeController::class, 'showArtEditRequest'])->name('art.requestedit');
+
+Route::patch('editar-arte/mudar-status/{artChange}', [App\Http\Controllers\ArtChangeController::class, 'artStatusChange'])->name('art.requestedit.status.change');
+
+Route::patch('editar-arte/{artChange}/editar', [App\Http\Controllers\ArtChangeController::class, 'update'])->name('art.requestedit.update');

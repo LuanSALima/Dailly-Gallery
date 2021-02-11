@@ -58,7 +58,7 @@ class ArtController extends Controller
         $validator = Validator::make(
             $request->all(), //$request Possui todos os campos enviados por POST
             $rules = [
-                'title' => 'required|min:5|max:30|unique:App\Models\Art,title',
+                'title' => 'required|min:5|unique:App\Models\ArtChange,new_title|unique:App\Models\Art,title',
                 'art' => 'required|image'
             ],
             $messages = [
@@ -169,7 +169,7 @@ class ArtController extends Controller
         $validator = Validator::make(
             $request->all(), //$request Possui todos os campos enviados por POST
             $rules = [
-                'title' => 'required|min:5|max:30|unique:App\Models\Art,title,'.$art->id,
+                'title' => 'required|min:5|max:30|unique:App\Models\ArtChange,new_title|unique:App\Models\Art,title,'.$art->id,
                 'art' => 'image'
             ],
             $messages = [
@@ -224,13 +224,13 @@ class ArtController extends Controller
                         return response()->json(['success' => true]);
                     }else{
                         return view('user.profile', [
-                            'user' => Auth::guard('user')->user()->id
+                            'user' => Auth::guard('user')->user()
                         ]);
                     }
                 }
                 else
                 {
-                    $error = "Já possui uma requisição para esta imagem <a href=''>clique aqui para saber mais</a>.";
+                    $error = "Já possui uma requisição para esta imagem <a href='".route('art.requestedit', ['artChange' => $art->artChange()->first()->id])."'>clique aqui para saber mais</a>.";
 
                     if ($request->expectsJson()) {
                         return response()->json(['success' => false,'message' => $error]);
@@ -255,7 +255,7 @@ class ArtController extends Controller
                     return response()->json(['success' => true]);
                 }else{
                     return view('user.profile', [
-                        'user' => Auth::guard('user')->user()->id
+                        'user' => Auth::guard('user')->user()
                     ]);
                 }
             }

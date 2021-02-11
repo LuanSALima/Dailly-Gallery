@@ -44,7 +44,7 @@
                 
             </div>
 
-            <form action="" method="PATCH" enctype="multipart/form-data">
+            <form action="{{ route('art.requestedit.update', ['artChange' => $artChange->id]) }}" method="POST" enctype="multipart/form-data">
 
                 @method('PATCH')
                 @csrf
@@ -55,7 +55,7 @@
                 </div>
                 <div class="form-group">
                     <label>Imagem</label>
-                    <input class="form-control" type="file" name="image">
+                    <input class="form-control" type="file" name="art">
                 </div>
                 <div class="form-group">
                     <input class="form-control btn btn-secondary btn-block my-2 bg-cyan" type="submit" name="edit" value="Alterar">
@@ -119,7 +119,7 @@
             
             <tr>
                 <td>
-                    <form action="" method="POST">
+                    <form action="{{ route('art.requestedit.status.change', ['artChange' => $artChange->id]) }}" method="POST">
                     @method('PATCH')
                     @csrf
                     <input style="display: none;" type="text" name="aprove" value="aproved">
@@ -129,7 +129,7 @@
             </tr>
             
             <tr>
-                <form action="" method="POST">
+                <form action="{{ route('art.requestedit.status.change', ['artChange' => $artChange->id]) }}" method="POST">
                 @method('PATCH')
                 @csrf
                 <td>
@@ -154,7 +154,7 @@
 {{-- Definindo os scripts da página --}}
 @section('content-script')
 <script>
-            
+            /*
     $(function(){
         $('form').submit(function(event){
 
@@ -189,6 +189,6 @@
             });
         });
     });
-
+*/
 </script>
 @endsection

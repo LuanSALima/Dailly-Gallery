@@ -248,7 +248,7 @@ class UserController extends Controller
     {
         //Busca o usuário através do id recebido pela URL
         $user = User::where('id', $id)->first();
-
+        dd($user);
         //Retorna a View enviando a variavel $user junto
         return view('user.profile', [
             'user' => $user

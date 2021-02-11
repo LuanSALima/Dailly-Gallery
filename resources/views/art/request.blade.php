@@ -44,7 +44,7 @@
                 
             </div>
 
-            <form action="{{ route('art.update', ['art' => $art->id]) }}" method="PATCH" enctype="multipart/form-data">
+            <form action="{{ route('art.update', ['art' => $art->id]) }}" method="POST" enctype="multipart/form-data">
 
                 @method('PATCH')
                 @csrf
