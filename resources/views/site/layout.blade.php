@@ -36,8 +36,13 @@
                             </div>
                         </li>
                         
-                        @else 
+                        @else
                             @if(Auth::guard('user')->check())
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('user.following') }}">
+                                    Seguindo
+                                </a>
+                            </li>
                             <li class="nav-item dropdown mx-auto">
                                 <a class="nav-link dropdown-toggle" href="#"data-toggle="dropdown" >
                                     Arte

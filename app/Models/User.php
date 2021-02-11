@@ -78,4 +78,9 @@ class User extends Authenticatable
     {
         return $this->hasManyThrough(ArtChange::class, Art::class, 'author', 'art', 'id', 'id');
     }
+
+    public function usersFollowing()
+    {
+        return $this->hasMany(UserFollow::class, 'user_following', 'id');
+    }
 }

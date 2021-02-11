@@ -106,7 +106,7 @@ class ArtChangeController extends Controller
             if($request->expectsJson()){
                 return response()->json(['success' => true]);
             }else{
-                return redirect()->route('home'); //Redireciona para a rota index
+                return redirect()->route('art.requestlist'); //Redireciona para a rota index
             }
         }
     }

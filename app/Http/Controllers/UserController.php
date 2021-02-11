@@ -248,7 +248,7 @@ class UserController extends Controller
     {
         //Busca o usuário através do id recebido pela URL
         $user = User::where('id', $id)->first();
-        dd($user);
+        
         //Retorna a View enviando a variavel $user junto
         return view('user.profile', [
             'user' => $user
@@ -342,5 +342,20 @@ class UserController extends Controller
             return redirect()
                     ->back();
         }
+    }
+
+    public function showFollowingPage()
+    {
+        $usersFollowed = Auth::guard('user')->user()->usersFollowing()->get();
+        
+        $arts = Art::
+                whereIn('author', $usersFollowed->pluck('user_followed'))
+                ->where('status', '=', 'accepted')
+                ->orderByDesc('updated_at');
+
+        return view('user.follows', [
+            'usersFollowing' => $usersFollowed,
+            'arts' => $arts->get()
+        ]);
     }
 }

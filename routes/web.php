@@ -70,3 +70,7 @@ Route::get('requisicao/editar-arte/{artChange}', [App\Http\Controllers\ArtChange
 Route::patch('editar-arte/mudar-status/{artChange}', [App\Http\Controllers\ArtChangeController::class, 'artStatusChange'])->name('art.requestedit.status.change');
 
 Route::patch('editar-arte/{artChange}/editar', [App\Http\Controllers\ArtChangeController::class, 'update'])->name('art.requestedit.update');
+
+Route::get('usuario/seguindo', [App\Http\Controllers\UserController::class, 'showFollowingPage'])->name('user.following')->middleware('auth:user');
+
+Route::post('user/{user}/follow', [App\Http\Controllers\UserFollowController::class, 'follow'])->name('user.follow.do');

@@ -31,7 +31,7 @@ class CreateArtChangesTable extends Migration
 
             $table->timestamps();
 
-            $table->foreign('art')->references('id')->on('art');
+            $table->foreign('art')->references('id')->on('art')->onDelete('cascade');
         });
     }
 

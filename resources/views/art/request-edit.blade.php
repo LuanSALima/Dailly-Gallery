@@ -154,7 +154,7 @@
 {{-- Definindo os scripts da página --}}
 @section('content-script')
 <script>
-            /*
+            
     $(function(){
         $('form').submit(function(event){
 
@@ -189,6 +189,6 @@
             });
         });
     });
-*/
+
 </script>
 @endsection

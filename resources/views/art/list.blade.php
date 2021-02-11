@@ -34,7 +34,7 @@
                 <div class="card-footer">
                     <p class="font-weight-bold">{{ $art->title }}</p>
                     <span>{{ $art->author()->first()->name }}</span>
-                    <span>{{ date('d/m/Y H:i', strtotime($art->created_at)) }}</span>
+                    <span>{{ date('d/m/Y H:i', strtotime($art->updated_at)) }}</span>
                     <div class="row flex justify-content-center align-items-center">
 
                         <span name="num-likes" class="mr-2">
