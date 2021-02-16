@@ -7,10 +7,13 @@ use Illuminate\Http\Request;
 //Dependências adicionadas
 use App\Models\User; //Model Usuario
 use App\Models\Art; //Model Art
+use App\Mail\VerifyEmail; //Email para verificar conta
 use Illuminate\Support\Facades\Hash; //Métodos para gerar código hash
 use Illuminate\Support\Facades\Auth; //Métodos de autenticação
 use Illuminate\Http\Response; //Métodos para resposta em json
 use Illuminate\Support\Facades\Validator; //Métodos para validar os dados
+use Illuminate\Support\Str; //Métodos para gerar string para o token
+use Illuminate\Support\Facades\Mail; //Métodos para enviar email
 
 class UserController extends Controller
 {
@@ -78,6 +81,17 @@ class UserController extends Controller
             $user->name = $request->name;  //Adiciona Nome ao objeto            
             $user->email = $request->email; //Adiciona Email ao objeto
             $user->password = Hash::make($request->password); //Adiciona senha criptografada ao objeto
+
+            $emailToken = Str::random(55);
+
+            while(User::where('email_token', $emailToken)->exists()){
+                $emailToken = Str::random(55);
+            }
+
+            Mail::to($user->email)->send(new VerifyEmail($user, $emailToken));
+
+            $user->email_token = $emailToken;
+
             $user->save(); //Grava no banco de dados
 
             if($request->expectsJson()){
@@ -154,7 +168,22 @@ class UserController extends Controller
 
             //Altera os dados dele pelos campos do formulário
             $user->name = $request->name;
-            $user->email = $request->email;
+
+            if($user->email != $request->email)
+            {
+                $user->email = $request->email;
+                $user->email_verified_at = NULL;
+
+                $emailToken = Str::random(55);
+
+                while(User::where('email_token', $emailToken)->exists()){
+                    $emailToken = Str::random(55);
+                }
+
+                Mail::to($user->email)->send(new VerifyEmail($user, $emailToken));
+
+                $user->email_token = $emailToken;
+            }
 
             //Salvar no banco de dados
             $user->save();
@@ -357,5 +386,23 @@ class UserController extends Controller
             'usersFollowing' => $usersFollowed,
             'arts' => $arts->get()
         ]);
+    }
+
+
+    public function verifyEmail($token)
+    {
+        if ($user = User::firstWhere('email_token', $token))
+        {
+            
+            $user->email_verified_at = date('Y-m-d H:i:s');
+            $user->email_token = NULL;
+
+            $user->save();
+
+            return redirect()->route('home')->with('successMessage', 'O E-mail foi verificado com sucesso!');
+
+        } else {
+            return view('site.home')->withErrors('Token inválido. Acesse novamente o link enviado para o seu email');
+        }
     }
 }

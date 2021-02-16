@@ -237,6 +237,7 @@ class LoginController extends Controller
             {
                 
                 $user->password = Hash::make($request->password);
+                $user->password_token = "";
                 $user->save();
 
                 if ($request->expectsJson()) {

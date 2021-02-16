@@ -93,8 +93,14 @@
                     @endif
                         
                     </button>
-                </form>
+            </form>
+            @else
+                @if(empty($user->email_verified_at))
+                <div class="alert alert-danger">
+                    <span>O seu email ainda não foi verificado. Acesse o link enviado ao seu email para verifica-lo</span>
+                </div>
                 @endif
+            @endif
             </div>
 
             @if(!$user->arts->isEmpty()) {{-- Verifica o usuário possui artes cadastradas --}}

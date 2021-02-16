@@ -6,6 +6,9 @@
 
 {{-- Definindo o conteudo da página --}}
 @section('content')
+
+<div id="carregando" style=" display:none;position:fixed;z-index:1000;top:0;left:0;height:100%; width:100%;background: rgba( 255, 255, 255, .8 ) url('http://cdn.lowgif.com/full/b565ca96703fc1d5-.gif') 50% 50% no-repeat;"></div>
+
 <div class="h-100 py-5 row align-items-center justify-content-center">
     <div class="container w-50">
         <div class="text-center py-4">
@@ -55,6 +58,13 @@
 {{-- Definindo os scripts da página --}}
 @section('content-script')
 <script>
+
+    /*Apresenta o Gif de Carregamento*/
+    $(document).ajaxStart(function(){
+        $('#carregando').show();
+    }).ajaxStop(function (){
+        $('#carregando').hide();
+    });
             
     $(function(){
         $('form#formCad').submit(function(event){

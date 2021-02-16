@@ -19,7 +19,7 @@ Route::get('/', function () {
 });
 */
 
-Route::view('/', 'site.layout')->name('home');
+Route::view('/', 'site.home')->name('home');
 
 Route::get('registrar', [App\Http\Controllers\UserController::class, 'showRegisterForm'])->name('user.register');
 
@@ -86,3 +86,5 @@ Route::post('recuperar-senha', [App\Http\Controllers\LoginController::class, 're
 Route::get('recuperar-conta/{token}', [App\Http\Controllers\LoginController::class, 'showRecoverAccount'])->name('recover.account');
 
 Route::post('recuperar-conta', [App\Http\Controllers\LoginController::class, 'recoverAccount'])->name('recover.account.do');
+
+Route::get('verificar-email/{token}', [App\Http\Controllers\UserController::class, 'verifyEmail'])->name('user.verify.email');
