@@ -17,6 +17,17 @@ class UserFollowController extends Controller
         if(Auth::guard('user')->check())
         {
             $userLogged = Auth::guard('user')->user();
+
+            if($userLogged->id == $user->id){
+
+                $error = "Não é possível seguir a si mesmo";
+
+                if($request->expectsJson()){
+                    return response()->json(['success' => false, 'message' => $error]);
+                }else{
+                    return redirect()->back()->withErrors($error);
+                }
+            }
         
             if(($userFollow = $userLogged->usersFollowing()->where('user_followed', $user->id))->exists())
             {

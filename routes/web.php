@@ -71,6 +71,18 @@ Route::patch('editar-arte/mudar-status/{artChange}', [App\Http\Controllers\ArtCh
 
 Route::patch('editar-arte/{artChange}/editar', [App\Http\Controllers\ArtChangeController::class, 'update'])->name('art.requestedit.update');
 
+Route::delete('editar-arte/{artChange}/deletar', [App\Http\Controllers\ArtChangeController::class, 'destroy'])->name('art.requestedit.destroy');
+
 Route::get('usuario/seguindo', [App\Http\Controllers\UserController::class, 'showFollowingPage'])->name('user.following')->middleware('auth:user');
 
 Route::post('user/{user}/follow', [App\Http\Controllers\UserFollowController::class, 'follow'])->name('user.follow.do');
+
+Route::get('esqueceu-senha', [App\Http\Controllers\LoginController::class, 'forgotPassword'])->name('forgot.password');
+
+Route::post('recuperar-senha', [App\Http\Controllers\LoginController::class, 'recoverPassword'])->name('recover.password');
+
+//Route::get('mail/test', [App\Mail\RecoverAccount::class, 'build'])->name('mail.recoverpassword');
+
+Route::get('recuperar-conta/{token}', [App\Http\Controllers\LoginController::class, 'showRecoverAccount'])->name('recover.account');
+
+Route::post('recuperar-conta', [App\Http\Controllers\LoginController::class, 'recoverAccount'])->name('recover.account.do');

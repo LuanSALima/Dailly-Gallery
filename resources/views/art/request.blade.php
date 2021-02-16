@@ -55,11 +55,20 @@
                 </div>
                 <div class="form-group">
                     <label>Imagem</label>
-                    <input class="form-control" type="file" name="image">
+                    <input class="form-control" type="file" name="art">
                 </div>
                 <div class="form-group">
                     <input class="form-control btn btn-secondary btn-block my-2 bg-cyan" type="submit" name="edit" value="Alterar">
                 </div>
+            </form>
+
+            <form action="{{ route('art.destroy', ['art' => $art->id]) }}" method="POST">
+                
+                @method('DELETE')
+                @csrf
+
+                <input class="form-control btn btn-danger btn-block my-2 bg-cyan" type="submit" name="delete" value= "Deletar">
+
             </form>
         @endif
 

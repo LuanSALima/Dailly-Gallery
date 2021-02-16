@@ -2,14 +2,17 @@
 
 
 {{-- Definindo o título da página --}}
-@section('title', 'Login')
+@section('title', 'Esqueceu a Senha')
 
 {{-- Definindo o conteudo da página --}}
 @section('content')
+
+<div id="carregando" style=" display:none;position:fixed;z-index:1000;top:0;left:0;height:100%; width:100%;background: rgba( 255, 255, 255, .8 ) url('http://cdn.lowgif.com/full/b565ca96703fc1d5-.gif') 50% 50% no-repeat;"></div>
+
 <div class="h-100 py-5 row align-items-center justify-content-center">
 	<div class="container w-50">
 		<div class="text-center py-4">
-			<h2>Login</h2>
+			<h2>Esqueceu sua senha</h2>
 		</div>
 		
 		@if($errors->any()) {{-- Verifica se possui erros --}}
@@ -21,11 +24,19 @@
         </div>
         @endif
 
+        @if (\Session::has('successMessage'))
+        <div class="alert alert-success">
+             <span>
+                {!! \Session::get('successMessage') !!}
+            </span>
+        </div>
+        @endif
+
 		<div id="mensagem">
             
         </div>
 
-		<form id="formLogin" action="{{ route('login.do') }}" method="POST">
+		<form action="{{ route('recover.password') }}" method="POST">
 
 			@csrf
 
@@ -33,15 +44,7 @@
 				<input class="form-control" type="text" name="email" placeholder="E-mail">
 			</div>
 
-			<div class="form-group">
-				<input class="form-control" type="password" name="password" placeholder="Senha">
-			</div>
-			
-			<div class="form-group text-center">
-				<a href="{{ route('forgot.password') }}">Esqueceu a senha?</a>
-			</div>
-
-			<button class="btn btn-secondary btn-block my-2 bg-cyan">Login</button>
+			<button class="btn btn-secondary btn-block my-2 bg-cyan">Enviar E-mail</button>
 		</form>
 	</div>
 </div>
@@ -51,18 +54,24 @@
 {{-- Definindo os scripts da página --}}
 @section('content-script')
 <script>
+
+    /*Apresenta o Gif de Carregamento*/
+    $(document).ajaxStart(function(){
+        $('#carregando').show();
+    }).ajaxStop(function (){
+        $('#carregando').hide();
+    });
     
     $(function(){
-        $('form#formLogin').submit(function(event){
+        $('form').submit(function(event){
 
             event.preventDefault(); //Prevenindo o comportamento padrão (evento de submit)
 
             var camposForm = new FormData($(this)[0]);
-            camposForm.append("json", 1);
 
             //Enviando um ajax
             $.ajax({
-                url: "{{ route('login.do') }}", //Rota que retornará JSON
+                url: $(this).attr('action'), //Rota que retornará JSON
                 type: "POST",
                 data: camposForm,
                 dataType: 'json',
@@ -73,7 +82,7 @@
                     if(response.success === true){
                         //Redirecionar
 
-                        window.location.href = "{{ route('home') }}";
+                        $('#mensagem').addClass("alert alert-success").html(response.message);
                     }else{
                         //Apresentar erro
 

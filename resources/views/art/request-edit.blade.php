@@ -61,6 +61,12 @@
                     <input class="form-control btn btn-secondary btn-block my-2 bg-cyan" type="submit" name="edit" value="Alterar">
                 </div>
             </form>
+            <form action="{{ route('art.requestedit.destroy', ['artChange' => $artChange->id]) }}" method="POST">
+                @method('DELETE')
+                @csrf
+
+                <input class="form-control btn btn-danger btn-block my-2 bg-cyan" type="submit" name="delete" value= "Deletar">
+            </form>
         @endif
 
         @if(Auth::guard('admin')->check())

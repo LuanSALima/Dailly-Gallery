@@ -11,6 +11,7 @@ use App\Models\ArtChange;
 use Illuminate\Support\Facades\Auth; //Métodos de autenticação
 use Illuminate\Http\Response; //Métodos para resposta em json
 use Illuminate\Support\Facades\Validator; //Métodos para validar os dados
+use Illuminate\Support\Facades\Storage; //Métodos para remover imagem
 
 class ArtController extends Controller
 {
@@ -213,7 +214,7 @@ class ArtController extends Controller
                     $artEdit->new_title = $request->title;
 
                     if($request->file('art')){
-                        $artEdit->new_image_path = $request->file('art')->store('art/'.$idAuthor);
+                        $artEdit->new_image_path = $request->file('art')->store('art/'.$art->author);
                     }else{
                         $artEdit->new_image_path = $art->path;
                     }
@@ -246,6 +247,9 @@ class ArtController extends Controller
             {
                 $art->title = $request->title;
                 if($request->file('art')){
+
+                    Storage::delete($art->path);
+
                     $art->path = $request->file('art')->store('art/'.$art->author);
                 }
                 $art->status = 'pendent';
@@ -268,17 +272,23 @@ class ArtController extends Controller
      * @param  \App\Models\Art  $art
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Art $art)
+    public function destroy(Request $request, Art $art)
     {
         if(Auth::guard('user')->check())
         {
             if($art->author()->first()->id == Auth::guard('user')->user()->id)
             {
+                Storage::delete($art->path);
+
                 $art->delete();
 
-                return view('user.profile', [
-                    'user' => Auth::guard('user')->user()
-                ]);
+                if($request->expectsJson()){
+                    return response()->json(['success' => true]);
+                }else{
+                    return view('user.profile', [
+                        'user' => Auth::guard('user')->user()
+                    ]);
+                }
             }
             else
             {
@@ -287,7 +297,6 @@ class ArtController extends Controller
                         ->withErrors(['Está arte não é sua']);
             }
         }
-        
     }
 
     public function showArtsRequestList()

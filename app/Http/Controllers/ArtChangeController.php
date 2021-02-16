@@ -10,6 +10,7 @@ use App\Models\Art;
 use Illuminate\Support\Facades\Auth; //Métodos de autenticação
 use Illuminate\Http\Response; //Métodos para resposta em json
 use Illuminate\Support\Facades\Validator; //Métodos para validar os dados
+use Illuminate\Support\Facades\Storage; //Métodos para remover imagem
 
 class ArtChangeController extends Controller
 {
@@ -173,7 +174,10 @@ class ArtChangeController extends Controller
             $artChange->new_title = $request->title;
 
             if($request->file('art')){
-                $artChange->new_image_path = $request->file('art')->store('art/'.$idAuthor);
+
+                Storage::delete($artChange->new_image_path);
+
+                $artChange->new_image_path = $request->file('art')->store('art/'.$artChange->art()->first()->author);
             }else{
                 $artChange->new_image_path = $artChange->new_image_path;
             }
@@ -187,6 +191,34 @@ class ArtChangeController extends Controller
                 return view('user.profile', [
                     'user' => Auth::guard('user')->user()
                 ]);
+            }
+        }
+    }
+
+    public function destroy(Request $request, ArtChange $artChange)
+    {
+        if(Auth::guard('user')->check())
+        {
+            if($artChange->author()->id == Auth::guard('user')->user()->id)
+            {
+                if($artChange->new_image_path != $artChange->art()->first()->path)
+                {
+                   Storage::delete($artChange->new_image_path); 
+                }
+
+                $artChange->delete();
+
+                if($request->expectsJson()){
+                    return response()->json(['success' => true]);
+                }else{
+                    return view('art.requestlist');
+                }
+            }
+            else
+            {
+                return redirect()
+                        ->back()
+                        ->withErrors(['Está arte não é sua']);
             }
         }
     }

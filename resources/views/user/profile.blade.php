@@ -68,6 +68,7 @@
             
             <div class="text-center py-4">
                 <h2>{{ $user->name }}</h2>
+                @if(Auth::guard('user')->user()->id != $user->id)
                 <form action="{{ route('user.follow.do', ['user' => $user->id]) }}" method="POST">
                     @csrf
                     
@@ -93,6 +94,7 @@
                         
                     </button>
                 </form>
+                @endif
             </div>
 
             @if(!$user->arts->isEmpty()) {{-- Verifica o usuário possui artes cadastradas --}}
